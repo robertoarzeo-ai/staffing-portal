@@ -714,7 +714,7 @@ const _fbStorage = {
         <div class="fw"><input type="password" id="l-p" placeholder="••••••••" autocomplete="current-password"/>
         <svg class="ico fi" aria-hidden="true"><use href="#i-eye"/></svg></div>
       </div>
-      <button class="btn-primary" id="btn-login" onclick="doLogin()">
+      <button class="btn-primary" id="btn-login">
         <span id="l-bt">Accedi</span><svg class="ico" aria-hidden="true"><use href="#i-arrow-r"/></svg>
       </button>
       <div class="secrow">
@@ -1805,6 +1805,7 @@ async function doLogin(){
       },1500);
     })
     .catch(function(err){
+      _loginInProgress=false;
       fails++;
       if(btn){btn.disabled=false;btn.textContent='Accedi';}
       if(fails>=MAX_ATT){lockedUntil=Date.now()+15*60*1000;fails=0;toast('lt-area','Troppi tentativi. Bloccato 15 min.','error');}
@@ -6906,10 +6907,10 @@ const SAMPLE=[];
 const SAMPLE_STF=[];
 
 /* ══ EVENT LISTENERS ══ */
-var _bl=document.getElementById('btn-login');
-if(_bl)_bl.addEventListener('click',doLogin);
 var _lp=document.getElementById('l-p');
 if(_lp)_lp.addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+var _bl=document.getElementById('btn-login');
+if(_bl)_bl.addEventListener('click',function(e){e.preventDefault();doLogin();});
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     if(typeof closeDelModal==='function')closeDelModal();
