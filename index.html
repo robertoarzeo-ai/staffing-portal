@@ -602,6 +602,13 @@ select[data-field=progetto]{text-overflow:ellipsis;overflow:hidden;}
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
+// ── Mostra login immediatamente (prima che Firebase sia pronto) ──────
+document.addEventListener('DOMContentLoaded', function(){
+  // Assicura che page-login sia visibile finché Firebase non decide
+  var pl = document.getElementById('page-login');
+  if(pl) pl.style.display = 'flex';
+});
+
 // ── Firebase config ──────────────────────────────────────────────────
 const _FB_CONFIG = {
   apiKey: "AIzaSyBIiF5LoFJelxE1AA2ljNFvlEeTV4k0aoE",
@@ -687,7 +694,7 @@ const _fbStorage = {
 <symbol id="i-sort-desc"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
 </svg>
 
-<div id="page-login" class="page">
+<div id="page-login" class="page" style="display:flex">
   <div class="bg-wrap">
     <div class="card">
       <div class="brand">
