@@ -781,7 +781,7 @@ const _fbStorage = {
     <div class="kpi-sep"></div>
     <div class="kpi-item"><span class="kpi-n kc-g" id="kpi-conf">—</span><span class="kpi-l">Conferm.</span></div>
   </div>
-  <div class="home-layout">
+  <div class="page-home">
     <!-- LEFT PANEL -->
     <div class="left-panel" id="left-panel">
       <div class="lp-search-wrap">
@@ -1786,7 +1786,7 @@ async function doLogin(){
           expiresAt:Date.now()+SESS_MS
         };
         // Carica tutti i dati condivisi dal DB
-        return initStorage();
+        return _initAfterLogin();
       });
     })
     .then(function(){
@@ -1816,8 +1816,8 @@ function doLogout(){
   SESSION=null;
   _oppsCache=null;_stfCache=null;_resCache=null;_alcCache=null;
   _prjCache=null;_finCache=null;_ggCache=null;_grpCache=null;_usersCache=null;
-  document.getElementById('home-layout').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('page-home').style.display='none';
+  showPage('page-login');
   var ul=document.getElementById('l-u');var pl=document.getElementById('l-p');
   if(ul)ul.value='';if(pl)pl.value='';
 }
@@ -6878,9 +6878,10 @@ function dlXLS(html,filename){
 
 /* ══ INIT ══ */
 async function init(){
+  // Mostra subito il login mentre carichiamo
   showPage('page-login');
+  // Carica dati condivisi (non dipendono dall'auth per la cache locale)
   await Promise.all([
-    initStorage(),
     initStorageRisorse(),
     initStorageAllocazioni(),
     initStorageProgetti(),
@@ -6888,6 +6889,10 @@ async function init(){
     initStorageGG(),
     initStorageFin()
   ]);
+}
+
+async function _initAfterLogin(){
+  await initStorage();
 }
 
 const SAMPLE=[];
@@ -6904,6 +6909,36 @@ document.addEventListener('keydown',function(e){
     if(typeof closeListEdit==='function')closeListEdit();
   }
 });
+
+// ── Avvio: Firebase Auth state listener ──────────────────
+// Gestisce sia primo caricamento che refresh pagina con sessione attiva
+_fbAuth.onAuthStateChanged(function(firebaseUser){
+  if(firebaseUser){
+    // Utente già autenticato (es. refresh pagina) — carica profilo e vai alla home
+    _fbDb.ref('users/'+firebaseUser.uid).once('value').then(function(snap){
+      var profile=snap.val()||{};
+      SESSION={
+        uid:firebaseUser.uid,
+        token:randTok(),
+        username:profile.username||firebaseUser.email,
+        email:firebaseUser.email,
+        role:profile.role||'user',
+        groupId:profile.groupId||null,
+        expiresAt:Date.now()+SESS_MS
+      };
+      return _initAfterLogin();
+    }).then(function(){
+      goHome();
+    }).catch(function(e){
+      console.error('Init after login error:', e);
+      showPage('page-login');
+    });
+  } else {
+    // Nessun utente loggato — mostra login
+    showPage('page-login');
+  }
+});
+
 init();
 
 /* ═══════════════════════════════════════════════════════
