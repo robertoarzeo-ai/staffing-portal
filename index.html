@@ -1774,7 +1774,7 @@ async function doLogin(){
   if(!email||!pass){toast('lt-area','Inserisci email e password.');return;}
   if(Date.now()<lockedUntil){toast('lt-area','Account bloccato. Riprova tra qualche minuto.','error');return;}
   // Mostra spinner
-  var btn=document.getElementById('l-btn');
+  var btn=document.getElementById('btn-login');
   if(btn){btn.disabled=true;btn.textContent='Accesso...';}
   _fbAuth.signInWithEmailAndPassword(email,pass)
     .then(function(cred){
