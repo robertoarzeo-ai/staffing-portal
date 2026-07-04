@@ -712,7 +712,7 @@ const _fbStorage = {
       <div class="field">
         <label>Password</label>
         <div class="fw"><input type="password" id="l-p" placeholder="••••••••" autocomplete="current-password"/>
-        <svg class="ico fi" aria-hidden="true"><use href="#i-eye"/></svg></div>
+        <svg class="ico fi" aria-hidden="true" style="cursor:pointer" onclick="var i=document.getElementById('l-p');i.type=i.type==='password'?'text':'password'"><use href="#i-eye"/></svg></div>
       </div>
       <button class="btn-primary" id="btn-login">
         <span id="l-bt">Accedi</span><svg class="ico" aria-hidden="true"><use href="#i-arrow-r"/></svg>
@@ -1806,14 +1806,18 @@ async function doLogin(){
     })
     .catch(function(err){
       _loginInProgress=false;
-      fails++;
       if(btn){btn.disabled=false;btn.textContent='Accedi';}
+      // Blocca immediatamente per quota exceeded — non incrementare fails
+      if(err.code==='auth/quota-exceeded'||err.code==='auth/too-many-requests'){
+        lockedUntil=Date.now()+60*60*1000; // blocca 1 ora
+        toast('lt-area','Servizio temporaneamente non disponibile. Riprova tra 1 ora.','error');
+        return;
+      }
+      fails++;
       if(fails>=MAX_ATT){lockedUntil=Date.now()+15*60*1000;fails=0;toast('lt-area','Troppi tentativi. Bloccato 15 min.','error');}
       else{
-        var msg='Credenziali non valide.';
-        if(err.code==='auth/user-not-found'||err.code==='auth/wrong-password'||err.code==='auth/invalid-credential')msg='Email o password errati.';
-        else if(err.code==='auth/too-many-requests')msg='Troppi tentativi. Riprova più tardi.';
-        else if(err.code==='auth/network-request-failed')msg='Errore di rete. Controlla la connessione.';
+        var msg='Email o password errati.';
+        if(err.code==='auth/network-request-failed')msg='Errore di rete. Controlla la connessione.';
         toast('lt-area',msg,'error');
       }
     });
@@ -6908,9 +6912,11 @@ const SAMPLE_STF=[];
 
 /* ══ EVENT LISTENERS ══ */
 var _lp=document.getElementById('l-p');
-if(_lp)_lp.addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+if(_lp)_lp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();_loginInProgress=false;doLogin();}});
+var _lu=document.getElementById('l-u');
+if(_lu)_lu.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('l-p').focus();}});
 var _bl=document.getElementById('btn-login');
-if(_bl)_bl.addEventListener('click',function(e){e.preventDefault();doLogin();});
+if(_bl)_bl.addEventListener('click',function(e){e.preventDefault();_loginInProgress=false;doLogin();});
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     if(typeof closeDelModal==='function')closeDelModal();
