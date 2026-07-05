@@ -6912,9 +6912,6 @@ async function init(){
   ]);
 }
 
-async function _initAfterLogin(){
-  await initStorage();
-}
 
 const SAMPLE=[];
 const SAMPLE_STF=[];
@@ -6934,6 +6931,10 @@ document.addEventListener('keydown',function(e){
 
 // ── Avvio: Firebase Auth state listener ──────────────────
 // Gestisce sia primo caricamento che refresh pagina con sessione attiva
+function _initAfterLogin(){
+  return initStorage();
+}
+
 _fbAuth.onAuthStateChanged(function(firebaseUser){
   if(firebaseUser){
     // Utente già autenticato (es. refresh pagina) — carica profilo e vai alla home
