@@ -1731,6 +1731,7 @@ function _saveStfShared(v){_storageSave(STF_KEY,v);}
 function _saveUsersShared(v){_usersCache=v;_storageSave(USERS_KEY,v);}
 
 function loadOpps(){return _oppsCache||JSON.parse(JSON.stringify(SAMPLE));}
+console.log("[CP1] saveOpps defined");
 function saveOpps(data){_oppsCache=data;_saveOppsShared(data);_auditLog('save','opportunità','Salvate '+data.length+' opportunità');}
 function loadStaffing(){return _stfCache||JSON.parse(JSON.stringify(SAMPLE_STF));}
 function saveStaffing(data){_stfCache=data;_saveStfShared(data);_auditLog('save','staffing','Salvati '+data.length+' needs');}
@@ -4133,6 +4134,7 @@ function syncAlcFromStorage(){
 }
 
 function renderAlcMappaFiltered(){renderAlcMappa();}
+console.log("[CP3] renderAlcMappa defined");
 function renderAlcMappa(){
   var el=document.getElementById('asec-mappa');if(!el)return;
   var alcs=loadAllocazioni().filter(function(a){return a.stato!=='Concluso';});
@@ -4638,6 +4640,7 @@ function resetDashFilters(){
   renderDashboard();
 }
 
+console.log("[CP2] renderDashboard defined");
 function renderDashboard(){
   var allOpps=loadOpps();
   var mktSel=document.getElementById('df-mercato');
@@ -6931,6 +6934,7 @@ document.addEventListener('keydown',function(e){
 
 // ── Avvio: Firebase Auth state listener ──────────────────
 // Gestisce sia primo caricamento che refresh pagina con sessione attiva
+console.log("[CP5] _initAfterLogin defined");
 function _initAfterLogin(){
   return initStorage();
 }
@@ -7173,6 +7177,7 @@ window.addEventListener('resize',_mobInit);document.addEventListener('DOMContent
 var _logCache=null;
 var _logFlt={user:'',action:'',from:'',to:'',q:''};
 
+console.log("[CP4] renderAdminLog defined");
 function renderAdminLog(){
   var el=document.getElementById('adm-log-content');
   if(!el)return;
@@ -7413,4 +7418,3 @@ window.addEventListener('resize',_mobInit);document.addEventListener('DOMContent
 </script>
 </body>
 </html>
-
