@@ -1805,14 +1805,16 @@ async function doLogin(){
       });
     })
     .then(function(){
+      console.log('doLogin then: SESSION=', SESSION);
       if(btn){btn.disabled=false;btn.textContent='Accedi';}
-      _auditLog('login',SESSION.username,'Login effettuato',{role:SESSION.role});
-      goHome();
+      try{_auditLog('login',SESSION.username,'Login effettuato',{role:SESSION.role});}catch(ae){console.error('auditLog error:',ae);}
+      try{goHome();}catch(ge){console.error('goHome error:',ge);}
       if(SESSION&&SESSION.mustChange)setTimeout(function(){
         showNotif('Cambia la password nelle impostazioni.','warn','⚠ Password temporanea');
       },1500);
     })
     .catch(function(err){
+      console.error('doLogin catch:', err.code, err.message);
       if(btn){btn.disabled=false;btn.textContent='Accedi';}
       // Blocca immediatamente per quota exceeded — non incrementare fails
       if(err.code==='auth/quota-exceeded'||err.code==='auth/too-many-requests'){
