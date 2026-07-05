@@ -7,6 +7,116 @@ function showPage(pageId){
     p.style.display = p.id===pageId ? 'flex' : 'none';
   });
 }
+function _auditLog(action,entity,detail,extra){
+  if(!SESSION||!_fbDb)return;
+  var now=new Date();
+  var entry={
+    ts:now.toISOString(),
+    user:SESSION.username,
+    role:SESSION.role||'user',
+    action:action,
+    entity:entity||'',
+    detail:detail||'',
+    page:_currentView||'',
+    extra:extra||null
+  };
+  // Salva su LOG_KEY via Firebase
+  _storageLoad(LOG_KEY).then(function(logs){
+    logs=logs||[];
+    logs.unshift(entry);
+    var cutoff=Date.now()-LOG_MAX_DAYS*864e5;
+    logs=logs.filter(function(l){return new Date(l.ts).getTime()>cutoff;});
+    if(logs.length>10000)logs=logs.slice(0,10000);
+    _fbStorage.set(LOG_KEY,logs).catch(function(){});
+  }).catch(function(){
+    _fbStorage.set(LOG_KEY,[entry]).catch(function(){});
+  });
+  // Mantieni HIST_KEY per compatibilità
+  _storageLoad(HIST_KEY).then(function(hist){
+    hist=hist||[];
+    hist.unshift({ts:entry.ts,user:entry.user,action:action,entity:entity||'',detail:detail||''});
+    if(hist.length>200)hist=hist.slice(0,200);
+    _fbStorage.set(HIST_KEY,hist).catch(function(){});
+  }).catch(function(){});
+}
+function goHome(){
+  showPage('page-home');
+  document.getElementById('h-ava').textContent=SESSION.username[0].toUpperCase();
+  document.getElementById('h-user').textContent=SESSION.username;
+  applyRoles();
+  selectedId=null;rpMode='view';
+  switchView('list');
+  renderList();
+  renderNeeds();
+  updateKPI();
+}
+function applyRoles(){
+  var isAdmin=SESSION&&SESSION.role==='admin';
+  var grp=getCurrentGroup();
+
+  // Funzione locale per verificare accesso
+  function _can(page){
+    if(!SESSION)return false;
+    if(isAdmin)return true;
+    if(!grp)return false;
+    var p=grp.permessi[page];
+    return p==='read'||p==='write';
+  }
+  function _canW(page){
+    if(!SESSION)return false;
+    if(isAdmin)return true;
+    if(!grp)return false;
+    return grp.permessi[page]==='write';
+  }
+
+  // Mappa completa nav → page
+  var navMap=[
+    {id:'nav-dashboard',page:'dashboard'},
+    {id:'nav-list',page:'list'},
+    {id:'nav-needs',page:'needs'},
+    {id:'nav-opps',page:'opps'},
+    {id:'nav-staffing',page:'staffing'},
+    {id:'nav-allocazioni',page:'allocazioni'},
+    {id:'nav-risorse',page:'risorse'},
+    {id:'nav-fin',page:'fin'}
+  ];
+
+  // Prima nascondi TUTTI i nav (eccetto logo)
+  document.querySelectorAll('.nav-btn').forEach(function(b){
+    if(b.id==='btn-admin'||b.id==='btn-dark')return;
+    b.style.display='none';
+  });
+
+  // Poi mostra solo quelli consentiti
+  navMap.forEach(function(n){
+    var el=document.getElementById(n.id);
+    if(!el)return;
+    el.style.display=_can(n.page)?'':'none';
+  });
+
+  // Bottone Admin: visibile solo se ha accesso admin
+  var btnAdm=document.getElementById('btn-admin');
+  if(btnAdm)btnAdm.style.display=_can('admin')?'':'none';
+
+  // Modalità sola lettura per la vista corrente
+  var ro=!_canW(_currentView||'list');
+  document.body.classList.toggle('ro-mode',ro);
+  var banner=document.getElementById('ro-banner');
+  if(banner)banner.classList.toggle('show',ro&&!isAdmin);
+
+  // Label ruolo in topbar
+  var rol=document.getElementById('h-role');
+  if(rol)rol.textContent=isAdmin?'• Admin':grp?'• '+grp.nome:'• Sola lettura';
+
+  // Pulsante nuova opportunità
+  var bnew=document.getElementById('btn-new-opp');
+  if(bnew)bnew.style.display=_canW('list')?'':'none';
+}
+function addHistory(action,entity,detail){
+  // Alias legacy — delega a _auditLog
+  _auditLog(action,entity,detail);
+}
+
 
 /* == CONSTANTS == */
 
@@ -516,17 +626,7 @@ function doLogout(){
   if(ul)ul.value='';if(pl)pl.value='';
 }
 function _doLogout(){
-function goHome(){
-  showPage('page-home');
-  document.getElementById('h-ava').textContent=SESSION.username[0].toUpperCase();
-  document.getElementById('h-user').textContent=SESSION.username;
-  applyRoles();
-  selectedId=null;rpMode='view';
-  switchView('list');
-  renderList();
-  renderNeeds();
-  updateKPI();
-}
+
 function showChangePwdModal(){
   document.getElementById('chpwd-new').value='';
   document.getElementById('chpwd-confirm').value='';
@@ -545,68 +645,7 @@ function saveChangePwd(){
 }
 /* ══ RBAC ══ */
 function canEdit(){return SESSION&&SESSION.role==='admin';}
-function applyRoles(){
-  var isAdmin=SESSION&&SESSION.role==='admin';
-  var grp=getCurrentGroup();
 
-  // Funzione locale per verificare accesso
-  function _can(page){
-    if(!SESSION)return false;
-    if(isAdmin)return true;
-    if(!grp)return false;
-    var p=grp.permessi[page];
-    return p==='read'||p==='write';
-  }
-  function _canW(page){
-    if(!SESSION)return false;
-    if(isAdmin)return true;
-    if(!grp)return false;
-    return grp.permessi[page]==='write';
-  }
-
-  // Mappa completa nav → page
-  var navMap=[
-    {id:'nav-dashboard',page:'dashboard'},
-    {id:'nav-list',page:'list'},
-    {id:'nav-needs',page:'needs'},
-    {id:'nav-opps',page:'opps'},
-    {id:'nav-staffing',page:'staffing'},
-    {id:'nav-allocazioni',page:'allocazioni'},
-    {id:'nav-risorse',page:'risorse'},
-    {id:'nav-fin',page:'fin'}
-  ];
-
-  // Prima nascondi TUTTI i nav (eccetto logo)
-  document.querySelectorAll('.nav-btn').forEach(function(b){
-    if(b.id==='btn-admin'||b.id==='btn-dark')return;
-    b.style.display='none';
-  });
-
-  // Poi mostra solo quelli consentiti
-  navMap.forEach(function(n){
-    var el=document.getElementById(n.id);
-    if(!el)return;
-    el.style.display=_can(n.page)?'':'none';
-  });
-
-  // Bottone Admin: visibile solo se ha accesso admin
-  var btnAdm=document.getElementById('btn-admin');
-  if(btnAdm)btnAdm.style.display=_can('admin')?'':'none';
-
-  // Modalità sola lettura per la vista corrente
-  var ro=!_canW(_currentView||'list');
-  document.body.classList.toggle('ro-mode',ro);
-  var banner=document.getElementById('ro-banner');
-  if(banner)banner.classList.toggle('show',ro&&!isAdmin);
-
-  // Label ruolo in topbar
-  var rol=document.getElementById('h-role');
-  if(rol)rol.textContent=isAdmin?'• Admin':grp?'• '+grp.nome:'• Sola lettura';
-
-  // Pulsante nuova opportunità
-  var bnew=document.getElementById('btn-new-opp');
-  if(bnew)bnew.style.display=_canW('list')?'':'none';
-}
 
 function guardEdit(page){
   page=page||_currentView||'list';
@@ -1221,43 +1260,9 @@ function saveOppForm(){
   renderList();renderNeeds();renderLP();updateKPI();
   cancelOppForm();
 }
-function addHistory(action,entity,detail){
-  // Alias legacy — delega a _auditLog
-  _auditLog(action,entity,detail);
-}
 
-function _auditLog(action,entity,detail,extra){
-  if(!SESSION||!_fbDb)return;
-  var now=new Date();
-  var entry={
-    ts:now.toISOString(),
-    user:SESSION.username,
-    role:SESSION.role||'user',
-    action:action,
-    entity:entity||'',
-    detail:detail||'',
-    page:_currentView||'',
-    extra:extra||null
-  };
-  // Salva su LOG_KEY via Firebase
-  _storageLoad(LOG_KEY).then(function(logs){
-    logs=logs||[];
-    logs.unshift(entry);
-    var cutoff=Date.now()-LOG_MAX_DAYS*864e5;
-    logs=logs.filter(function(l){return new Date(l.ts).getTime()>cutoff;});
-    if(logs.length>10000)logs=logs.slice(0,10000);
-    _fbStorage.set(LOG_KEY,logs).catch(function(){});
-  }).catch(function(){
-    _fbStorage.set(LOG_KEY,[entry]).catch(function(){});
-  });
-  // Mantieni HIST_KEY per compatibilità
-  _storageLoad(HIST_KEY).then(function(hist){
-    hist=hist||[];
-    hist.unshift({ts:entry.ts,user:entry.user,action:action,entity:entity||'',detail:detail||''});
-    if(hist.length>200)hist=hist.slice(0,200);
-    _fbStorage.set(HIST_KEY,hist).catch(function(){});
-  }).catch(function(){});
-}
+
+
 
 function _loadAuditLog(cb){
   if(!_fbDb){cb([]);return;}
