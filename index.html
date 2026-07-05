@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/><meta name="version" content="1779381346"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Opportunity &amp; Staffing</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#eef0f4;--surf:#ffffff;--surf2:#f4f6f9;--bdr:rgba(0,0,0,.1);--bdr2:rgba(0,0,0,.18);
+  --accent:#1a5cb8;--ok:#1a7a42;--warn:#b86200;--err:#c0392b;--muted:#5a6472;--dim:#9099a8;
+  --txt:#1a1e24;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:13px;min-height:100vh;overflow:hidden}
+/* PAGES */
+.page{display:none;flex-direction:column;height:100vh;overflow:hidden}
+.page.active{display:flex}
+/* LOGIN */
+.bg-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;position:relative;overflow:hidden;background:radial-gradient(ellipse at 30% 40%,rgba(144,192,255,.07) 0%,transparent 60%)}
+.card{width:100%;max-width:400px;background:#ffffff;border:.5px solid var(--bdr2);border-radius:16px;padding:2.2rem;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:1.6rem}
+.brand-icon{width:36px;height:36px;background:linear-gradient(135deg,#1a5cb8,#2a7ad8);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+.brand-name{font-weight:700;font-size:15px}.brand-sub{font-size:10px;color:var(--muted)}
+.card h2{font-size:20px;font-weight:700;margin-bottom:.3rem}
+.card p.sub{color:var(--muted);font-size:12px;margin-bottom:1.2rem}
+.field{margin-bottom:.9rem}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:.35rem;letter-spacing:.05em;text-transform:uppercase}
+.fw{position:relative}
+.fw input{width:100%;background:#fff;border:.5px solid var(--bdr2);border-radius:8px;padding:9px 36px 9px 12px;color:var(--txt);font-family:var(--font);font-size:13px;outline:none;transition:border .15s}
+.fw input:focus{border-color:var(--accent)}
+.fi{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--muted);cursor:pointer;font-size:15px}
+.btn-primary{width:100%;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s;margin-top:.3rem}
+.btn-primary:hover{opacity:.88}
+.secrow{display:flex;gap:6px;margin-top:1rem;flex-wrap:wrap}
+.secb{background:#fff;border:.5px solid var(--bdr);border-radius:20px;padding:3px 10px;font-size:10px;color:var(--dim);display:flex;align-items:center;gap:4px}
+/* TOPBAR */
+.topbar{height:48px;background:linear-gradient(90deg,#1a3570,#1e4a9a);border-bottom:.5px solid var(--bdr);display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0}
+.nav-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;border:none;background:transparent;color:rgba(255,255,255,.7);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+.nav-btn:hover,.nav-btn.active{background:rgba(26,92,184,.15);color:#fff}
+.nav-btn.active{color:#fff}
+.top-sep{width:.5px;height:20px;background:var(--bdr);margin:0 4px}
+.top-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.h-ava{width:28px;height:28px;background:linear-gradient(135deg,#1a5cb8,#2a7ad8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.h-info{line-height:1.3}
+.h-user{font-size:12px;font-weight:600;color:#fff}
+.h-role{font-size:10px;color:rgba(255,255,255,.65)}
+.btn-icon{background:transparent;border:none;color:rgba(255,255,255,.8);cursor:pointer;padding:5px;border-radius:6px;font-size:16px;display:flex}
+.btn-icon:hover{background:rgba(255,255,255,.15);color:#fff}
+/* RO BANNER */
+.ro-banner{display:none;align-items:center;justify-content:center;gap:7px;padding:5px;background:rgba(184,98,0,.08);border-bottom:.5px solid rgba(184,98,0,.25);font-size:11px;color:var(--warn);flex-shrink:0}
+.ro-banner.show{display:flex}
+/* KPI BAR */
+.kpi-bar{display:flex;align-items:center;height:40px;padding:0 16px;background:#1a3570;border-bottom:.5px solid var(--bdr);flex-shrink:0;overflow-x:auto;gap:0}
+.kpi-item{display:flex;flex-direction:column;align-items:center;padding:0 14px;flex-shrink:0}
+.kpi-n{font-size:15px;font-weight:700;font-family:var(--mono);line-height:1.1}
+.kpi-l{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.06em;text-transform:uppercase}
+.kpi-sep{width:.5px;height:20px;background:var(--bdr);flex-shrink:0}
+.kc-w{color:#fff}.kc-a{color:#90c8ff}.kc-g{color:#5de8a0}.kc-e{color:#ff8a95}.kc-o{color:#ffb86a}
+/* HOME LAYOUT */
+.home-layout{flex:1;display:flex;overflow:hidden}
+.left-panel{width:220px;flex-shrink:0;background:#f7f9fc;border-right:.5px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;transition:width .2s}
+.left-panel.hidden{width:0;border:none;overflow:hidden}
+.lp-search-wrap{padding:10px;flex-shrink:0}
+.lp-search{width:100%;background:#fff;border:.5px solid var(--bdr2);border-radius:7px;padding:7px 10px;color:var(--txt);font-family:var(--font);font-size:12px;outline:none}
+.lp-search:focus{border-color:var(--accent)}
+.lp-filters{padding:0 10px 8px;display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.lp-chk{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;padding:2px 0}
+.lp-chk input{accent-color:var(--accent)}
+.lp-list{flex:1;overflow-y:auto;padding:0 6px 6px}
+.lp-list::-webkit-scrollbar{width:3px}
+.lp-list::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
+.lp-item{padding:7px 8px;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .1s;font-size:12px}
+.lp-item:hover{background:var(--surf2)}
+.lp-item.active{background:rgba(79,142,247,.12);color:var(--accent)}
+.lp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.lp-name{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* VIEWS */
+.view{display:none;flex:1;flex-direction:column;overflow:hidden}
+.view.active{display:flex}
+/* LIST/NEEDS VIEWS */
+.list-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:10px}
+.list-filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;flex-shrink:0}
+.lf-search{background:#fff;border:.5px solid var(--bdr2);border-radius:7px;padding:6px 10px;color:var(--txt);font-family:var(--font);font-size:12px;outline:none;width:180px}
+.lf-search:focus{border-color:var(--accent)}
+.lf-chk{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer}
+.lf-chk input{accent-color:var(--accent)}
+.stato-pills{display:flex;gap:4px;flex-wrap:wrap}
+.s-pill{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:.5px solid var(--bdr);color:var(--muted);background:transparent;font-family:var(--font);transition:all .15s}
+.s-pill.active{background:rgba(26,92,184,.15);border-color:var(--accent);color:var(--accent)}
+.s-pill.p-prep.active{color:var(--accent);border-color:var(--accent)}
+.s-pill.p-neg.active{color:#a89ef7;border-color:#a89ef7;background:rgba(123,110,247,.2)}
+.s-pill.p-win.active{color:var(--ok);border-color:var(--ok);background:rgba(45,212,160,.15)}
+.s-pill.p-los.active{color:var(--err);border-color:var(--err);background:rgba(244,99,122,.15)}
+.s-pill.p-val.active{color:var(--warn);border-color:var(--warn);background:rgba(244,160,48,.15)}
+.tbl-wrap{flex:1;overflow:auto}
+.tbl-wrap::-webkit-scrollbar{width:5px;height:5px}
+.tbl-wrap::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:3px}
+.tbl{border-collapse:collapse;width:100%;font-size:11.5px}
+.tbl th{background:#e8ecf2;color:var(--muted);font-weight:600;padding:7px 8px;text-align:left;position:sticky;top:0;z-index:1;border-bottom:.5px solid var(--bdr2);white-space:nowrap;cursor:pointer;user-select:none;font-size:11px;letter-spacing:.04em}
+.tbl th:hover{color:var(--txt)}
+.tbl td{padding:6px 8px;border-bottom:.5px solid var(--bdr);vertical-align:middle;white-space:nowrap}
+.tbl tr:hover td{background:rgba(26,92,184,.05)}
+.tbl tr.sel td{background:rgba(26,92,184,.12)}
+.list-footer{display:flex;align-items:center;justify-content:space-between;padding:7px 4px 0;flex-shrink:0;gap:8px;flex-wrap:wrap}
+.list-footer-acts{display:flex;gap:6px}
+.btn-act{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;border:none;font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:opacity .15s}
+.btn-act:disabled{opacity:.35;cursor:not-allowed}
+.btn-act.primary{background:var(--accent);color:#fff}
+.btn-act.secondary{background:var(--surf2);color:var(--txt);border:.5px solid var(--bdr2)}
+.btn-act:not(:disabled):hover{opacity:.85}
+.btn-export{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;border:.5px solid var(--bdr2);background:transparent;color:var(--muted);font-family:var(--font);font-size:11px;cursor:pointer}
+.btn-export:hover{border-color:var(--ok);color:var(--ok)}
+/* PILLS / BADGES */
+.pill{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
+.pill-prep{background:rgba(79,142,247,.12);color:var(--accent)}
+.pill-val{background:rgba(244,160,48,.12);color:var(--warn)}
+.pill-neg{background:rgba(123,110,247,.12);color:#a89ef7}
+.pill-win{background:rgba(45,212,160,.12);color:var(--ok)}
+.pill-los{background:rgba(244,99,122,.12);color:var(--err)}
+.pill-oth{background:rgba(255,255,255,.06);color:var(--muted)}
+.badge-type{display:inline-flex;align-items:center;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.04em;margin-right:2px}
+.bt-data{background:rgba(79,142,247,.15);color:var(--accent)}
+.bt-ai{background:rgba(123,110,247,.15);color:#a89ef7}
+.bt-rpa{background:rgba(45,212,160,.15);color:var(--ok)}
+/* OPP/STF VIEWS */
+.opp-view{flex:1;display:flex;overflow:hidden}
+.rp-panel{flex:1;overflow-y:auto;padding:14px;background:var(--surf)}
+.rp-panel::-webkit-scrollbar{width:4px}
+.rp-panel::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
+.rp-toolbar{padding:8px 14px;display:flex;align-items:center;gap:6px;border-bottom:.5px solid var(--bdr);flex-shrink:0}
+.btn-ghost{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;border:.5px solid var(--bdr2);background:transparent;color:var(--muted);font-family:var(--font);font-size:11.5px;cursor:pointer;transition:all .15s}
+.btn-ghost:hover{border-color:var(--bdr2);color:var(--txt)}
+.btn-ghost.danger{color:var(--err);border-color:rgba(244,99,122,.3)}
+.btn-ghost:disabled{opacity:.3;cursor:not-allowed}
+.rp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;color:var(--dim);gap:8px}
+.rp-empty i{font-size:36px}
+/* DETAIL */
+.opp-detail .dh{display:flex;align-items:flex-start;gap:10px;margin-bottom:1rem}
+.opp-detail .dini{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
+.opp-detail .dtitle{font-size:16px;font-weight:700;margin-bottom:4px}
+.d-section{margin-bottom:1rem}
+.d-section-title{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;border-bottom:.5px solid var(--bdr);padding-bottom:4px}
+.d-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.d-grid-3{grid-template-columns:repeat(3,1fr)}
+.df{background:var(--surf2);border-radius:7px;padding:8px 10px}
+.df-label{font-size:10px;color:var(--muted);margin-bottom:3px}
+.df-val{font-size:12px;font-weight:500}
+/* FORM */
+.opp-form .form-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:.5px solid var(--bdr)}
+.fsec{margin-bottom:1rem}
+.fsec-title{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.5rem}
+.fgrid{display:grid;gap:8px}
+.fgrid-2{grid-template-columns:1fr 1fr}
+.fgrid-3{grid-template-columns:1fr 1fr 1fr}
+.field input,.field select,.field textarea{width:100%;background:#fff;border:.5px solid var(--bdr2);border-radius:7px;padding:7px 10px;color:var(--txt);font-family:var(--font);font-size:12px;outline:none}
+.field input:focus,.field select,.field textarea:focus{border-color:var(--accent)}
+.field select option{background:var(--surf)}
+.field textarea{resize:vertical;min-height:70px}
+.toggle-row{display:flex;gap:8px;flex-wrap:wrap}
+.tog-label{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;padding:5px 9px;border-radius:6px;border:.5px solid var(--bdr);transition:all .15s}
+.tog-label input{accent-color:var(--accent)}
+.tog-label:has(input:checked){border-color:var(--accent);background:rgba(79,142,247,.08);color:var(--accent)}
+.form-toast-area{min-height:20px;margin-bottom:.5rem}
+.tab-bar{display:flex;gap:4px;margin-bottom:.8rem}
+.tab-btn{padding:5px 12px;border-radius:6px;border:none;background:var(--surf2);color:var(--muted);font-family:var(--font);font-size:11.5px;cursor:pointer;transition:all .15s}
+.tab-btn.active{background:var(--accent);color:#fff}
+/* AI */
+.ai-section{margin-top:.5rem}
+.ai-input-wrap{display:flex;gap:6px;margin-bottom:.5rem}
+.ai-input-wrap textarea{flex:1;background:#fff;border:.5px solid var(--bdr2);border-radius:7px;padding:8px 10px;color:var(--txt);font-family:var(--font);font-size:12px;outline:none;resize:none;height:70px}
+.ai-input-wrap textarea:focus{border-color:var(--accent)}
+.btn-analyze{display:flex;align-items:center;gap:5px;padding:7px 14px;background:linear-gradient(135deg,#4f8ef7,#7c6af7);color:#fff;border:none;border-radius:7px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;align-self:flex-end}
+.btn-analyze:disabled{opacity:.4;cursor:not-allowed}
+/* STAFFING */
+.stf-view{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:10px}
+
+.stf-action-bar{display:flex;gap:6px;margin-bottom:8px;flex-shrink:0}
+.stf-tbl-wrap{height:150px;overflow-y:auto;border:.5px solid var(--bdr);border-radius:8px;flex-shrink:0}
+.stf-form-area{flex:1;overflow-y:auto;margin-top:8px}
+.stf-fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:.8rem}
+/* ADMIN */
+.admin-wrap{flex:1;overflow-y:auto;padding:16px;max-width:700px;margin:0 auto;width:100%}
+.admin-header{display:flex;align-items:center;gap:10px;margin-bottom:1.2rem}
+.admin-section{background:var(--surf);border:.5px solid var(--bdr);border-radius:10px;padding:14px;margin-bottom:1rem}
+.admin-section-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.8rem}
+.user-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:7px;transition:background .1s}
+.user-row:hover{background:var(--surf2)}
+.u-ava{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.u-info{flex:1}
+.u-name{font-weight:600;font-size:13px}
+.u-role{font-size:11px;color:var(--muted)}
+.badge-role{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.br-admin{background:rgba(79,142,247,.15);color:var(--accent)}.br-editor{background:rgba(26,92,184,.12);color:#1a5cb8}
+.br-user{background:rgba(255,255,255,.06);color:var(--muted)}
+.cpw-form{background:var(--surf2);border-radius:7px;padding:8px;margin-top:6px}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.visible{opacity:1;pointer-events:all}
+.modal-box{background:#ffffff;border:.5px solid var(--bdr2);border-radius:14px;padding:1.8rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal-icon{width:44px;height:44px;border-radius:50%;border:.5px solid;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto .8rem}
+.modal-title{font-size:16px;font-weight:700;text-align:center;margin-bottom:.5rem}
+.modal-body{font-size:12px;color:var(--muted);text-align:center;margin-bottom:1rem;line-height:1.6}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem}
+.btn-modal-cancel{padding:7px 16px;border-radius:7px;border:.5px solid var(--bdr2);background:transparent;color:var(--muted);font-family:var(--font);font-size:12px;cursor:pointer}
+.btn-modal-confirm{padding:7px 16px;border-radius:7px;border:none;color:#fff;font-family:var(--font);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.modal-irrev{display:none;background:rgba(244,99,122,.07);border:.5px solid rgba(244,99,122,.2);border-radius:7px;padding:8px 10px;font-size:11px;color:var(--err);margin-bottom:.8rem}
+.modal-irrev.show{display:flex;align-items:center;gap:6px}
+/* LIST EDIT PANEL */
+.list-edit-panel{display:none;flex-direction:column;gap:6px;padding:10px;border-top:.5px solid var(--bdr);background:#1a3570;flex-shrink:0}
+.list-edit-header{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.list-edit-prompt{width:100%;background:#fff;border:.5px solid var(--bdr2);border-radius:7px;padding:7px 10px;color:var(--txt);font-family:var(--font);font-size:12px;outline:none;resize:none;height:60px}
+.list-edit-prompt:focus{border-color:var(--accent)}
+.list-edit-acts{display:flex;align-items:center;gap:8px}
+/* SPINNER */
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* TOAST */
+.toast-area{min-height:16px;margin:.4rem 0;font-size:12px;text-align:center}
+.t-error{color:var(--err)}.t-success{color:var(--ok)}.t-warn{color:var(--warn)}.t-info{color:var(--accent)}.t-ai{color:#a89ef7}
+/* CHANGE PWD MODAL */
+.chpwd-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s}
+.chpwd-overlay.visible{opacity:1;pointer-events:all}
+.chpwd-box{background:#ffffff;border:.5px solid rgba(79,142,247,.4);border-radius:14px;padding:2rem;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+/* NEW USER FORM */
+.nu-form{background:var(--surf2);border:.5px solid var(--bdr);border-radius:8px;padding:12px;margin-bottom:.8rem;display:none}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:3px}
+
+/* SVG ICONS */
+svg.ico{display:inline-block;width:1em;height:1em;vertical-align:-0.15em;flex-shrink:0;overflow:visible}
+.btn-act svg.ico,.btn-ghost svg.ico,.btn-icon svg.ico,.btn-primary svg.ico,.btn-analyze svg.ico{width:14px;height:14px}
+.btn-icon svg.ico{width:16px;height:16px}
+
+/* LEFT PANEL FILTERS — mockup layout */
+.lp-filters-top{display:flex;gap:8px;padding:0 10px 8px;flex-shrink:0}
+.lp-chk-top{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:var(--txt);cursor:pointer;flex:1;padding:6px 10px;background:#fff;border:1.5px solid var(--bdr2);border-radius:8px;transition:border-color .15s}
+.lp-chk-top input{accent-color:var(--accent);width:16px;height:16px;flex-shrink:0;cursor:pointer}
+.lp-chk-top:has(input:checked){border-color:var(--accent)}
+.lp-filters-grid-wrap{padding:0 10px 6px;flex-shrink:0}
+.lp-grid-labels{display:grid;grid-template-columns:repeat(5,1fr);margin-bottom:4px}
+.lp-grid-label{font-size:9px;font-weight:700;color:var(--txt);text-align:center;letter-spacing:.02em}
+.lp-grid-checks{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.lp-grid-chk{display:flex;justify-content:center;padding:5px 0;background:#fff;border:1.5px solid var(--bdr2);border-radius:7px;cursor:pointer;transition:border-color .15s}
+.lp-grid-chk input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
+.lp-grid-chk:has(input:checked){border-color:var(--accent);background:rgba(26,92,184,.04)}
+.lp-sep{height:1px;background:var(--bdr);margin:6px 10px 8px;flex-shrink:0}
+.lp-sort-row{display:flex;justify-content:flex-end;padding:0 10px 6px;flex-shrink:0}
+.lp-sort-btn{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px 6px;border-radius:5px;font-size:14px;display:flex;align-items:center;gap:3px;font-size:12px}
+.lp-sort-btn:hover{background:var(--surf2);color:var(--txt)}
+/* LP ITEM — new style */
+.lp-item{padding:8px 10px;border-radius:8px;cursor:pointer;display:flex;align-items:flex-start;gap:9px;transition:background .12s;border:.5px solid transparent}
+.lp-item:hover{background:#f0f4fb;border-color:var(--bdr)}
+.lp-item.active{background:rgba(26,92,184,.09);border-color:rgba(26,92,184,.3)}
+.lp-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;flex-shrink:0;letter-spacing:.03em}
+.lp-info{flex:1;min-width:0}
+.lp-company{font-weight:600;font-size:12px;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lp-title{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.lp-market{font-size:10px;color:var(--dim);margin-top:2px}
+.lp-right{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;gap:2px;min-width:36px}
+.lp-prob{font-size:12px;font-weight:700;line-height:1.2}
+.lp-val{font-size:10px;color:var(--muted);white-space:nowrap}
+/* AI PROMPT PASTE */
+.ai-paste-wrap{position:relative}
+.ai-prompt-big{width:100%;min-height:100px;max-height:280px;resize:vertical;background:#fff;border:1.5px solid var(--bdr2);border-radius:8px;padding:10px 12px;color:var(--txt);font-family:var(--font);font-size:13px;outline:none;line-height:1.5;transition:border-color .15s}
+.ai-prompt-big:focus{border-color:var(--accent)}
+.ai-img-thumb{position:relative;display:inline-flex;margin:3px}
+.ai-img-thumb img{width:64px;height:64px;object-fit:cover;border-radius:6px;border:1.5px solid var(--bdr2)}
+.ai-img-thumb .rm{position:absolute;top:-5px;right:-5px;width:18px;height:18px;border-radius:50%;background:var(--err);color:#fff;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;line-height:1}
+.file-preview{display:flex;align-items:center;gap:8px;background:var(--surf2);border:.5px solid var(--bdr2);border-radius:7px;padding:6px 10px;margin:3px 0;font-size:12px}
+.file-preview .fp-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-preview .fp-remove{cursor:pointer;color:var(--err);background:none;border:none;font-size:16px;line-height:1}
+/* List edit panel paste */
+.le-prompt-wrap{position:relative}
+.list-edit-prompt{width:100%;background:#fff;border:1.5px solid var(--bdr2);border-radius:7px;padding:8px 10px;color:var(--txt);font-family:var(--font);font-size:12px;outline:none;resize:none;height:70px;transition:border-color .15s}
+.list-edit-prompt:focus{border-color:var(--accent)}
+/* AI PASTE CHIPS */
+.ai-paste-wrap{position:relative}
+.ai-paste-hint{font-size:10px;color:var(--dim);margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.ai-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.ai-chip{display:flex;align-items:center;gap:5px;background:var(--surf2);border:.5px solid var(--bdr2);border-radius:20px;padding:3px 10px 3px 6px;font-size:11px;max-width:180px}
+.ai-chip img{width:20px;height:20px;object-fit:cover;border-radius:3px;flex-shrink:0}
+.ai-chip-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.ai-chip-rm{background:none;border:none;cursor:pointer;color:var(--err);font-size:13px;line-height:1;padding:0 0 0 2px;flex-shrink:0}
+.ai-input-wrap textarea{min-height:90px;transition:border-color .15s}
+.ai-input-wrap textarea:focus{border-color:var(--accent)}
+/* STF DETAIL PANEL */
+.stf-detail-box{background:#fff;border:.5px solid var(--bdr2);border-radius:10px;padding:10px 14px;margin-bottom:8px;max-height:100px;overflow-y:auto;flex-shrink:0}
+.stf-detail-box::-webkit-scrollbar{width:4px}
+.stf-detail-box::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
+.stf-detail-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:.5px solid var(--bdr)}
+.stf-detail-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.stf-detail-field{display:flex;flex-direction:column;min-width:100px;flex:1}
+.stf-detail-label{font-size:9px;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.stf-detail-val{font-size:12px;font-weight:500;color:var(--txt)}
+.stf-toggle-pill{display:inline-flex;align-items:center;gap:4px;background:var(--surf2);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600}
+.stf-toggle-pill.on{background:rgba(26,92,184,.12);color:var(--accent)}
+/* LANG SELECT OPTIONS */
+#lang-sel option{background:#fff;color:#1a1e24}
+#lang-sel{color:#fff;background:rgba(255,255,255,.15);border:.5px solid rgba(255,255,255,.3);border-radius:6px;padding:3px 6px;font-size:11px;cursor:pointer;outline:none;font-family:var(--font)}
+/* RISORSE — permessi */
+body.ro-mode .res-del-btn{display:none!important}
+/* ══ DASHBOARD ══ */
+.dash-wrap{flex:1;overflow-y:auto;padding:14px 16px;background:var(--bg)}
+.dash-tab-bar{display:flex;gap:6px;margin-bottom:14px;flex-shrink:0;padding:14px 16px 0}
+.dash-tab{padding:6px 16px;border-radius:7px;border:.5px solid var(--bdr2);background:#fff;color:var(--muted);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.dash-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.dash-section{display:none}.dash-section.active{display:block}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+.kpi-card{background:#fff;border:.5px solid var(--bdr);border-radius:10px;padding:14px 16px}
+.kpi-card .kv{font-size:26px;font-weight:800;font-family:var(--mono);line-height:1.1;margin-bottom:4px}
+.kpi-card .kl{font-size:11px;color:var(--muted);font-weight:500}
+.kpi-card .ksub{font-size:10px;color:var(--dim);margin-top:2px}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.dash-grid-3{grid-template-columns:1fr 1fr 1fr}
+.dash-card{background:#fff;border:.5px solid var(--bdr);border-radius:10px;padding:14px}
+.dash-card-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:.5px solid var(--bdr)}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px}
+.bar-label{width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt);flex-shrink:0;font-size:11px}
+.bar-label.sm{width:80px}
+.bar-track{flex:1;height:14px;background:var(--surf2);border-radius:20px;overflow:hidden}
+.bar-fill{height:100%;border-radius:20px;transition:width .4s}
+.bar-val{font-size:10px;color:var(--muted);width:50px;text-align:right;flex-shrink:0}
+.funnel-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.funnel-label{font-size:11px;width:140px;flex-shrink:0}
+.funnel-track{flex:1;height:20px;background:var(--surf2);border-radius:4px;overflow:hidden;position:relative}
+.funnel-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;color:#fff;font-weight:600}
+.dash-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.dash-tbl th{background:var(--surf2);color:var(--muted);padding:5px 8px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.dash-tbl td{padding:5px 8px;border-bottom:.5px solid var(--bdr);vertical-align:middle}
+.dash-tbl tr:last-child td{border:none}
+.dot-warn{width:8px;height:8px;border-radius:50%;background:var(--err);display:inline-block;margin-right:4px}
+.dot-ok{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:4px}
+@media(max-width:700px){.dash-grid,.dash-grid-3{grid-template-columns:1fr}}
+/* BADGE NOTIFICHE */
+.nav-badge{position:absolute;top:2px;right:2px;min-width:14px;height:14px;background:var(--err);color:#fff;border-radius:20px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 3px;pointer-events:none}
+.nav-btn{position:relative}
+/* CALENDARIO */
+.cal-wrap{flex:1;overflow-y:auto;padding:14px 16px}
+.cal-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.cal-nav{background:none;border:.5px solid var(--bdr2);border-radius:6px;padding:4px 10px;cursor:pointer;font-family:var(--font);font-size:12px}
+.cal-nav:hover{background:var(--surf2)}
+.cal-month-title{font-size:15px;font-weight:700;min-width:160px}
+.cal-timeline{position:relative;overflow-x:auto}
+.cal-grid{display:grid;min-width:800px}
+.cal-day-headers{display:flex;border-bottom:.5px solid var(--bdr2);margin-bottom:4px}
+.cal-day-hd{flex:1;text-align:center;font-size:9px;font-weight:700;color:var(--muted);padding:3px 0;min-width:28px}
+.cal-day-hd.today{color:var(--accent);font-weight:800}
+.cal-lanes{position:relative;min-height:60px}
+.cal-opp-bar{position:absolute;height:22px;border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:600;color:#fff;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .15s;top:0}
+.cal-opp-bar:hover{opacity:.85;z-index:10}
+.cal-today-line{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);opacity:.5;z-index:5}
+/* TRADUZIONE */
+.transl-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:2000;display:none;align-items:center;justify-content:center}
+.transl-overlay.show{display:flex}
+.transl-box{background:#fff;border-radius:12px;padding:20px 28px;display:flex;align-items:center;gap:12px;font-size:13px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.transl-spinner{width:20px;height:20px;border:3px solid rgba(26,92,184,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+/* COMMENTI */
+.comments-section{margin-top:1rem;border-top:.5px solid var(--bdr);padding-top:1rem}
+.comment-item{display:flex;gap:10px;margin-bottom:10px}
+.comment-ava{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;flex-shrink:0}
+.comment-body{flex:1;background:var(--surf2);border-radius:8px;padding:8px 10px}
+.comment-meta{font-size:10px;color:var(--muted);margin-bottom:3px}
+.comment-text{font-size:12px;line-height:1.5}
+.comment-input{width:100%;background:#fff;border:.5px solid var(--bdr2);border-radius:7px;padding:8px 10px;font-family:var(--font);font-size:12px;outline:none;resize:none;min-height:60px;margin-top:8px}
+.comment-input:focus{border-color:var(--accent)}
+/* DISPONIBILITA RISORSE */
+.avail-bar{height:16px;border-radius:4px;overflow:hidden;background:var(--surf2);position:relative}
+.avail-fill{height:100%;transition:width .3s}
+.avail-over{background:var(--err)}
+.avail-ok{background:var(--ok)}
+.avail-partial{background:var(--warn)}
+/* DROP ZONE BACKUP */
+.drop-zone{border:2px dashed var(--bdr2);border-radius:10px;padding:20px 16px;text-align:center;font-size:12px;color:var(--muted);transition:all .2s;cursor:pointer;margin-top:8px;background:var(--surf2)}
+.drop-zone.drag-over{border-color:var(--accent);background:rgba(26,92,184,.08);color:var(--accent);transform:scale(1.01)}
+.drop-zone.has-file{border-color:var(--ok);background:rgba(26,122,66,.06)}
+.drop-zone b{display:block;margin-bottom:4px;color:var(--txt);font-size:13px}
+.drop-zone .file-name{font-weight:700;color:var(--ok);font-size:13px;margin-top:6px}
+/* DONUT CHART */
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.donut-svg{flex-shrink:0}
+.donut-legend{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+.donut-leg-item{display:flex;align-items:center;gap:7px;font-size:11px}
+.donut-leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.donut-leg-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)}
+.donut-leg-val{margin-left:auto;font-weight:700;color:var(--txt);white-space:nowrap;font-family:var(--mono)}
+.donut-center{text-anchor:middle;dominant-baseline:middle}
+
+/* ══ ALLOCAZIONI ══ */
+.alc-toolbar{padding:10px 12px;border-bottom:.5px solid var(--bdr);display:flex;gap:8px;align-items:flex-start;flex-shrink:0;flex-wrap:wrap;background:var(--surf)}
+.ai-prompt-wrap{flex:1;min-width:200px;display:flex;gap:6px;align-items:flex-start}
+.ai-prompt-input{flex:1;background:var(--surf2);border:.5px solid var(--bdr2);border-radius:8px;padding:7px 10px;font-family:var(--font);font-size:12px;resize:none;min-height:36px;max-height:80px;outline:none}
+.ai-prompt-input:focus{border-color:var(--accent);background:#fff}
+.alc-tabs{display:flex;gap:4px;padding:8px 12px 0;flex-shrink:0;border-bottom:.5px solid var(--bdr)}
+.alc-tab{padding:5px 14px;border-radius:7px 7px 0 0;border:.5px solid transparent;background:none;color:var(--muted);font-family:var(--font);font-size:12px;cursor:pointer}
+.alc-tab.active{background:#fff;border-color:var(--bdr);border-bottom-color:#fff;color:var(--accent);font-weight:600;margin-bottom:-1px}
+.alc-section{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;height:100%}
+.idle-card{background:#fff;border:.5px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.idle-card-hd{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.idle-badge{background:var(--err);color:#fff;border-radius:20px;font-size:10px;padding:1px 7px;font-weight:700}
+.idle-badge.warn{background:var(--warn)}
+.idle-badge.ok{background:var(--ok)}
+.util-bar{height:8px;border-radius:4px;background:var(--surf2);overflow:hidden;flex:1;width:100%;display:block}
+.util-fill{height:100%;border-radius:4px}
+.alc-row:hover{background:var(--surf2);cursor:pointer}
+.alc-edit-panel{width:560px;min-width:560px;flex-shrink:0;border-left:.5px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;background:var(--surf)}
+.alc-edit-panel.hidden{display:none}
+.gantt-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px}
+.gantt-name{width:140px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gantt-track{flex:1;position:relative;height:20px;background:var(--surf2);border-radius:4px;overflow:hidden}
+.gantt-bar{position:absolute;height:100%;border-radius:4px;display:flex;align-items:center;padding:0 5px;font-size:9px;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden}
+.ai-thinking{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--accent);padding:4px 0}
+.ai-thinking-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse .8s infinite alternate}
+.alc-row.selected{background:#e8f0fe !important;outline:2px solid var(--accent);outline-offset:-1px}
+.alc-row.selected td{background:#e8f0fe !important}
+/* DATA QUALITY */
+.dq-section{margin-bottom:14px}
+.dq-check{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fff;border:.5px solid var(--bdr);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:background .1s}
+.dq-check:hover{background:var(--surf2)}
+.dq-check.ok{border-left:3px solid var(--ok)}
+.dq-check.warn{border-left:3px solid var(--warn)}
+.dq-check.err{border-left:3px solid var(--err)}
+.dq-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.dq-icon.ok{background:rgba(26,122,66,.1);color:var(--ok)}
+.dq-icon.warn{background:rgba(184,98,0,.1);color:var(--warn)}
+.dq-icon.err{background:rgba(192,57,43,.1);color:var(--err)}
+.dq-body{flex:1;min-width:0}
+.dq-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.dq-desc{font-size:11px;color:var(--muted)}
+.dq-count{font-size:20px;font-weight:800;font-family:var(--mono);flex-shrink:0}
+.dq-count.ok{color:var(--ok)}.dq-count.warn{color:var(--warn)}.dq-count.err{color:var(--err)}
+.dq-detail{display:none;margin-top:8px;padding:8px;background:var(--surf2);border-radius:6px;font-size:11px;max-height:200px;overflow-y:auto}
+.dq-detail.open{display:block}
+.dq-kpi-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.dq-kpi{background:#fff;border:.5px solid var(--bdr);border-radius:10px;padding:10px 14px;flex:1;min-width:100px}
+.dq-kpi .n{font-size:22px;font-weight:800;font-family:var(--mono)}
+.dq-kpi .l{font-size:10px;color:var(--muted);margin-top:2px}
+.dq-dim-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin:12px 0 6px;padding-bottom:4px;border-bottom:.5px solid var(--bdr)}
+/* Allocazioni speciali */
+.alc-special{color:var(--warn);font-style:italic}
+/* FILTRI EXCEL-STYLE */
+.alc-th{cursor:pointer;user-select:none;white-space:nowrap;position:relative}
+.alc-th:hover{background:var(--surf2)}
+.alc-th.filtered{color:var(--accent)}
+.flt-icon{font-size:9px;margin-left:3px;opacity:.6}
+.alc-th.filtered .flt-icon{opacity:1;color:var(--accent)}
+.flt-dropdown{position:fixed;background:#fff;border:.5px solid var(--bdr2);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:1000;width:220px;padding:8px;display:none}
+.flt-dropdown.open{display:block}
+.flt-search{width:100%;border:.5px solid var(--bdr2);border-radius:5px;padding:5px 8px;font-size:11px;font-family:var(--font);margin-bottom:6px;box-sizing:border-box}
+.flt-list{max-height:200px;overflow-y:auto;margin-bottom:6px}
+.flt-item{display:flex;align-items:center;gap:6px;padding:2px 4px;border-radius:4px;font-size:11px;cursor:pointer}
+.flt-item:hover{background:var(--surf2)}
+.flt-item input{cursor:pointer;accent-color:var(--accent)}
+.flt-actions{display:flex;gap:6px;border-top:.5px solid var(--bdr);padding-top:6px;margin-top:2px}
+.flt-btn{flex:1;font-size:10px;padding:3px 6px;border-radius:5px;border:.5px solid var(--bdr2);background:#fff;cursor:pointer;font-family:var(--font)}
+.flt-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.flt-btn.clear{color:var(--err);border-color:rgba(192,57,43,.3)}
+.alc-th .sort-btn{background:none;border:none;cursor:pointer;padding:0 2px;color:var(--muted);font-size:10px;line-height:1;vertical-align:middle}
+.alc-th .sort-btn.asc{color:var(--accent)}
+.alc-th .sort-btn.desc{color:var(--accent)}
+.alc-th .flt-btn-inline{background:none;border:none;cursor:pointer;padding:0 2px;color:var(--muted);font-size:11px;line-height:1;vertical-align:middle}
+.alc-th .flt-btn-inline.filtered{color:var(--accent)}
+
+
+/* NOTIFICHE */
+.notif-panel{position:fixed;top:50px;right:12px;width:300px;z-index:2000;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.notif-item{background:#fff;border:.5px solid var(--bdr);border-radius:8px;padding:10px 12px;box-shadow:0 4px 16px rgba(0,0,0,.12);pointer-events:all;display:flex;gap:8px;align-items:flex-start;animation:slideIn .3s ease}
+body.dark .notif-item{background:var(--surf);border-color:var(--bdr)}
+.notif-item.err{border-left:3px solid var(--err)}
+.notif-item.warn{border-left:3px solid var(--warn)}
+.notif-item.ok{border-left:3px solid var(--ok)}
+.notif-icon{font-size:16px;flex-shrink:0}
+.notif-body{flex:1;font-size:11px}
+.notif-title{font-weight:700;margin-bottom:2px}
+.notif-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:0;flex-shrink:0}
+@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
+
+
+/* RICERCA GLOBALE */
+.search-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:none;align-items:flex-start;justify-content:center;padding-top:80px}
+.search-overlay.open{display:flex}
+.search-box{background:#fff;border-radius:12px;width:600px;max-width:94vw;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+body.dark .search-box{background:var(--surf)}
+.search-input{width:100%;padding:16px 20px;font-size:16px;border:none;outline:none;font-family:var(--font);background:transparent;color:var(--txt);border-bottom:.5px solid var(--bdr)}
+.search-results{max-height:400px;overflow-y:auto}
+.search-result{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;border-bottom:.5px solid var(--bdr)}
+.search-result:hover{background:var(--surf2)}
+.search-result-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.search-result-body{flex:1;min-width:0}
+.search-result-title{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search-result-sub{font-size:11px;color:var(--muted)}
+.search-result-type{font-size:10px;color:var(--muted);flex-shrink:0;background:var(--surf2);border-radius:4px;padding:2px 6px}
+.search-footer{padding:8px 16px;font-size:10px;color:var(--dim);border-top:.5px solid var(--bdr)}
+
+/* DARK MODE */
+body.dark{
+  --bg:#141920;--surf:#1e2530;--surf2:#252d3a;
+  --txt:#e8ecf1;--muted:#8899aa;--dim:#5a6878;
+  --bdr:rgba(255,255,255,.08);--bdr2:rgba(255,255,255,.12);
+  --accent:#4a9eff;--ok:#2ecc71;--warn:#f39c12;--err:#e74c3c;
+}
+body.dark .topbar{background:linear-gradient(90deg,#0d1a2e,#142040)}
+body.dark .kpi-bar{background:#0d1a2e}
+body.dark input,body.dark select,body.dark textarea{background:var(--surf2)!important;color:var(--txt)!important;border-color:var(--bdr2)!important}
+body.dark .tbl thead tr{background:var(--surf2)}
+body.dark .dash-card,body.dark .idle-card,body.dark .kpi-card,body.dark .dq-check{background:var(--surf)!important;border-color:var(--bdr)!important}
+body.dark .modal-box,body.dark .alc-edit-panel,body.dark .flt-dropdown,body.dark .drop-zone{background:var(--surf)!important;border-color:var(--bdr)!important}
+body.dark .nav-btn:hover,body.dark .alc-row:hover{background:rgba(255,255,255,.05)!important}
+body.dark .alc-row.selected{background:#1a3a6e!important}
+body.dark .alc-row.selected td{background:#1a3a6e!important}
+body.dark #page-login{background:var(--bg)}
+body.dark .left-panel{background:#181f2a;border-color:var(--bdr)}
+body.dark .pill-prep{background:#1a3a6e;color:#4a9eff}
+
+/* VISUALIZZAZIONI */
+.viz-wrap{flex:1;overflow-y:auto;padding:14px;min-height:0}
+.viz-tabs{display:flex;gap:4px;padding:8px 12px 0;flex-shrink:0;flex-wrap:wrap;border-bottom:.5px solid var(--bdr);background:var(--surf)}
+.viz-tab{padding:5px 12px;border-radius:7px 7px 0 0;border:.5px solid transparent;background:none;color:var(--muted);font-family:var(--font);font-size:11px;cursor:pointer;white-space:nowrap}
+.viz-tab.active{background:#fff;border-color:var(--bdr);border-bottom-color:#fff;color:var(--accent);font-weight:600;margin-bottom:-1px}
+body.dark .viz-tab.active{background:var(--surf2);border-bottom-color:var(--surf2)}
+.viz-section{display:none;flex:1;overflow:hidden;flex-direction:column}
+.viz-section.active{display:flex}
+.hm-cell{border-radius:3px;cursor:pointer;transition:opacity .15s}
+.hm-cell:hover{opacity:.8;outline:2px solid var(--accent)}
+/* VISUALIZZAZIONI */
+.viz-tab-btn{padding:5px 12px;border-radius:6px;border:.5px solid var(--bdr2);background:#fff;font-size:11px;font-family:var(--font);cursor:pointer;color:var(--muted)}
+.viz-tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+body.dark .viz-tab-btn{background:var(--surf2)}
+.date-it{position:relative;display:inline-flex;align-items:center}
+.date-it input{width:100px;border:.5px solid var(--bdr2);border-radius:4px;padding:3px 22px 3px 6px;font-size:11px;font-family:var(--mono);letter-spacing:.03em}
+.date-it input:focus{outline:none;border-color:var(--accent)}
+.date-it::after{content:"📅";position:absolute;right:4px;font-size:11px;pointer-events:none;opacity:.5}
+.tipo-toggle{display:inline-flex;border:.5px solid var(--bdr2);border-radius:6px;overflow:hidden;font-size:9px}
+.tipo-toggle button{border:none;padding:2px 6px;cursor:pointer;font-size:9px;font-family:var(--font);transition:background .15s;background:none;color:var(--muted)}
+.tipo-toggle button.active-spot{background:#78909c;color:#fff}
+.tipo-toggle button.active-cop{background:#1565c0;color:#fff}
+
+
+.fin-sticky-l2{position:sticky;left:130px;z-index:2;background:var(--surf);border-right:.5px solid var(--bdr)}
+.fin-hd-l2{position:sticky;left:130px;z-index:3;background:var(--surf2);border-right:.5px solid var(--bdr)}
+.fin-scroll-wrap{overflow-x:auto;border:.5px solid var(--bdr);border-radius:6px}
+.fin-sticky-l{position:sticky;left:0;z-index:2;background:var(--surf);border-right:.5px solid var(--bdr)}
+.fin-sticky-rr{position:sticky;right:6em;z-index:2;background:var(--surf2);border-left:2px solid var(--accent)}
+.fin-sticky-r{position:sticky;right:0;z-index:2;background:var(--surf2)}
+.fin-sticky-r0{position:sticky;right:0;z-index:2;background:var(--surf2);border-left:.5px solid var(--bdr)}
+.fin-hd-l{position:sticky;left:0;z-index:3;background:var(--surf2);border-right:.5px solid var(--bdr)}
+.fin-hd-rr{position:sticky;right:6em;z-index:3;background:var(--surf2);border-left:2px solid var(--accent)}
+.fin-hd-r{position:sticky;right:0;z-index:3;background:var(--surf2)}
+.fin-hd-r0{position:sticky;right:0;z-index:3;background:var(--surf2);border-left:.5px solid var(--bdr)}
+
+/* ── Tabelle Finanziari responsive ── */
+#fin-content{font-size:clamp(9px,1.1vw,14px)}
+#fin-scroll{overflow-x:auto}
+#fin-main-tbl{border-collapse:separate;border-spacing:0;table-layout:fixed;width:max-content;min-width:100%}
+
+/* Larghezze colonne in em → scalano col font-size del container */
+#fin-main-tbl col:first-child{width:9em}
+#fin-main-tbl col.col-month{width:4.5em}
+#fin-main-tbl col.col-ytd,#fin-main-tbl col.col-total{width:6em}
+
+/* Sticky sinistra */
+.fin-sticky-l,.fin-hd-l{position:sticky;left:0;z-index:2;background:var(--surf);border-right:.5px solid var(--bdr)}
+.fin-hd-l{z-index:3;background:var(--surf2)}
+
+/* Sticky destra */
+.fin-sticky-rr{position:sticky;right:6em;z-index:2;background:var(--surf2);border-left:2px solid var(--accent)}
+.fin-sticky-r{position:sticky;right:0;z-index:2;background:var(--surf2)}
+.fin-hd-rr{position:sticky;right:6em;z-index:3;background:var(--surf2);border-left:2px solid var(--accent)}
+.fin-hd-r{position:sticky;right:0;z-index:3;background:var(--surf2)}
+.fin-scroll-wrap{overflow-x:auto;border:.5px solid var(--bdr);border-radius:6px}
+
+/* Font scaling interno */
+#fin-content .fin-label{font-size:1em;font-weight:600;white-space:nowrap;overflow:hidden;padding:.35em .6em}
+#fin-content .fin-cell{font-size:.9em;font-family:var(--mono);text-align:right;padding:.3em .5em}
+#fin-content .fin-hd-month{font-size:.8em;text-align:right;padding:.35em .4em}
+
+select[data-field=progetto]{text-overflow:ellipsis;overflow:hidden;}
+.ic-btn{background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--accent);border-radius:4px;}
+.ic-btn:hover{background:var(--surf2);}
+
+.mob-tabbar{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;z-index:9999;background:linear-gradient(0deg,#0f2040,#1a3570);border-top:.5px solid rgba(255,255,255,.15);align-items:stretch;padding-bottom:env(safe-area-inset-bottom,0px);}
+.mob-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:transparent;color:rgba(255,255,255,.5);font-family:var(--font);font-size:9px;font-weight:500;cursor:pointer;padding:4px 2px;text-transform:uppercase;letter-spacing:.03em;transition:color .15s;position:relative;min-width:0;}
+.mob-tab svg{width:20px;height:20px}
+.mob-tab.active{color:#90c8ff}
+.mob-tab.active::after{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:#90c8ff;border-radius:0 0 3px 3px;}
+.mob-more-overlay{display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.5);}
+.mob-more-overlay.open{display:block}
+.mob-more-menu{position:fixed;bottom:56px;left:0;right:0;background:#1a3570;border-top:.5px solid rgba(255,255,255,.15);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 0;}
+.mob-more-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:12px 4px;color:rgba(255,255,255,.75);font-size:9px;font-family:var(--font);font-weight:500;text-transform:uppercase;cursor:pointer;background:transparent;border:none;}
+.mob-more-item svg{width:20px;height:20px}
+.mob-more-item.active{color:#90c8ff}
+@media(max-width:768px){.mob-tabbar{display:flex}.nav-btn{display:none!important}.top-sep{display:none!important}.home-layout{padding-bottom:60px}.left-panel{display:none!important}.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}.modal-wrap{align-items:flex-end!important}.modal-box,.modal-inner{width:100vw!important;max-width:100vw!important;max-height:85dvh!important;border-radius:14px 14px 0 0!important;margin:0!important;}}
+@media(min-width:769px){.mob-tabbar{display:none!important}.mob-more-overlay{display:none!important}}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+</script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+// ── Mostra login immediatamente (prima che Firebase sia pronto) ──────
+document.addEventListener('DOMContentLoaded', function(){
+  // Assicura che page-login sia visibile finché Firebase non decide
+  var pl = document.getElementById('page-login');
+  if(pl) pl.style.display = 'flex';
+});
+
+// ── Firebase config ──────────────────────────────────────────────────
+const _FB_CONFIG = {
+  apiKey: "AIzaSyBIiF5LoFJelxE1AA2ljNFvlEeTV4k0aoE",
+  authDomain: "staffing-portal-eeef6.firebaseapp.com",
+  databaseURL: "https://staffing-portal-eeef6-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "staffing-portal-eeef6",
+  storageBucket: "staffing-portal-eeef6.firebasestorage.app",
+  messagingSenderId: "111457601788",
+  appId: "1:111457601788:web:9606650b84bc6acc9caf79"
+};
+firebase.initializeApp(_FB_CONFIG);
+const _fbAuth = firebase.auth();
+const _fbDb = firebase.database();
+
+// ── Firebase storage API (rimpiazza window.storage) ──────────────────
+// Usa /data/<key> come path nel Realtime DB
+const _fbStorage = {
+  get: function(key) {
+    return _fbDb.ref('data/' + key).once('value').then(function(snap) {
+      var val = snap.val();
+      return val !== null ? { value: val } : null;
+    });
+  },
+  set: function(key, value) {
+    return _fbDb.ref('data/' + key).set(value).then(function() {
+      return { key: key, value: value };
+    });
+  },
+  delete: function(key) {
+    return _fbDb.ref('data/' + key).remove().then(function() {
+      return { key: key, deleted: true };
+    });
+  },
+  list: function(prefix) {
+    return _fbDb.ref('data').once('value').then(function(snap) {
+      var keys = [];
+      snap.forEach(function(child) {
+        if (!prefix || child.key.startsWith(prefix)) keys.push(child.key);
+      });
+      return { keys: keys };
+    });
+  }
+};
+</script>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+<symbol id="i-plus"       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+<symbol id="i-pencil"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+<symbol id="i-trash"      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+<symbol id="i-save"       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></symbol>
+<symbol id="i-x"          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+<symbol id="i-arrow-r"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+<symbol id="i-arrow-l"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+<symbol id="i-eye"        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-eye-off"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+<symbol id="i-sparkles"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/><path d="M19 3l.75 2.25L22 6l-2.25.75L19 9l-.75-2.25L16 6l2.25-.75z"/></symbol>
+<symbol id="i-list"       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+<symbol id="i-subtask"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><polyline points="3 6 4 7 6 5"/><polyline points="3 12 4 13 6 11"/><polyline points="3 18 4 19 6 17"/></symbol>
+<symbol id="i-briefcase"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="12"/></symbol>
+<symbol id="i-users"      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+<symbol id="i-gear"       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+<symbol id="i-logout"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+<symbol id="i-layers"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+<symbol id="i-lock"       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-lock-open"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></symbol>
+<symbol id="i-inbox"      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+<symbol id="i-key"        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></symbol>
+<symbol id="i-shield"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+<symbol id="i-excel"      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="19"/><line x1="15" y1="13" x2="9" y2="19"/></symbol>
+<symbol id="i-warn-circle"viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></symbol>
+<symbol id="i-check"      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+<symbol id="i-info"       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+<symbol id="i-warn-tri"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+<symbol id="i-search"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+<symbol id="i-user"       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+<symbol id="i-download"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+<symbol id="i-sort-asc"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+<symbol id="i-sort-desc"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
+</svg>
+
+<div id="page-login" class="page" style="display:flex">
+  <div class="bg-wrap">
+    <div class="card">
+      <div class="brand">
+        <div class="brand-icon"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg></div>
+        <div><div class="brand-name">Opportunity &amp; Staffing</div><div class="brand-sub">Portale Gestione</div></div>
+      </div>
+      <h2>Bentornato</h2>
+      <p class="sub">Accedi con le tue credenziali</p>
+      <div id="lt-area" class="toast-area"></div>
+      <div class="field">
+        <label>Username</label>
+        <div class="fw"><input type="text" id="l-u" placeholder="es. admin@portal.local" autocomplete="username"/>
+        <svg class="ico fi" aria-hidden="true"><use href="#i-user"/></svg></div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="fw"><input type="password" id="l-p" placeholder="••••••••" autocomplete="current-password"/>
+        <svg class="ico fi" aria-hidden="true" style="cursor:pointer" onclick="var i=document.getElementById('l-p');i.type=i.type==='password'?'text':'password'"><use href="#i-eye"/></svg></div>
+      </div>
+      <button class="btn-primary" id="btn-login" onclick="doLogin()">
+        <span id="l-bt">Accedi</span><svg class="ico" aria-hidden="true"><use href="#i-arrow-r"/></svg>
+      </button>
+      <div class="secrow">
+        <div class="secb"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Sessione 30 min</div>
+        <div class="secb"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg>Rate limited</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-home" class="page">
+  <div class="topbar">
+    <div class="brand-icon" style="width:28px;height:28px;font-size:14px;flex-shrink:0"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg></div>
+    <div class="top-sep"></div>
+    <button class="nav-btn" id="nav-dashboard" style="position:relative" onclick="switchView('dashboard')"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg><span>Dashboard</span><span id="badge-dash" class="nav-badge" style="display:none">0</span></button>
+    <button class="nav-btn active" id="nav-list" onclick="switchView('list')"><svg class="ico" aria-hidden="true"><use href="#i-list"/></svg><span id="lbl-nav-list">Elenco Opportunità</span></button>
+    <button class="nav-btn" id="nav-needs" onclick="switchView('needs')"><svg class="ico" aria-hidden="true"><use href="#i-subtask"/></svg><span>Elenco Needs</span></button>
+    <button class="nav-btn" id="nav-opps" onclick="switchView('opps')"><svg class="ico" aria-hidden="true"><use href="#i-briefcase"/></svg><span>Gestione Opportunità</span></button>
+    <button class="nav-btn" id="nav-staffing" onclick="switchView('staffing')"><svg class="ico" aria-hidden="true"><use href="#i-users"/></svg><span>Gestione Staffing</span></button>
+    <button class="nav-btn" id="nav-fin" onclick="switchView('fin')"><svg class="ico" aria-hidden="true"><use href="#i-briefcase"/></svg><span>Proj. Gestiti</span></button>
+    
+    <button class="nav-btn" id="nav-allocazioni" onclick="switchView('allocazioni')" style="position:relative"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg><span>Allocazioni</span><span id="badge-idle" class="nav-badge" style="display:none">0</span></button>
+    <button class="nav-btn" id="nav-risorse" onclick="switchView('risorse')"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg><span>Risorse</span></button>
+    <div class="top-sep"></div>
+    <select id="lang-sel" onchange="setLang(this.value)">
+      <option value="it">🇮🇹 IT</option><option value="es">🇪🇸 ES</option><option value="en">🇬🇧 EN</option>
+    </select>
+    <div class="top-r">
+      <button class="btn-icon" onclick="syncFromStorage()" title="Sincronizza dati condivisi"><svg class="ico" aria-hidden="true"><use href="#i-sort-asc"/></svg></button>
+      <button class="btn-icon" onclick="openSearch()" title="Ricerca globale (Ctrl+K)">🔍</button>
+      <button class="btn-icon" id="btn-dark" onclick="toggleDark()" title="Dark mode">🌙</button>
+      <button class="btn-icon" id="btn-admin" nav-id="nav-admin" onclick="goAdmin()" title="Amministrazione"><svg class="ico" aria-hidden="true"><use href="#i-gear"/></svg></button>
+      <div class="h-ava" id="h-ava">A</div>
+      <div class="h-info"><div class="h-user" id="h-user">admin</div><div class="h-role" id="h-role">• Editor</div></div>
+      <button class="btn-icon" onclick="doLogout()" title="Esci"><svg class="ico" aria-hidden="true"><use href="#i-logout"/></svg></button>
+    </div>
+  </div>
+
+  <div class="mob-tabbar" id="mob-tabbar">
+    <button class="mob-tab active" id="mobt-list" onclick="mobNav('list')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-list"/></svg>Opp.</button>
+    <button class="mob-tab" id="mobt-needs" onclick="mobNav('needs')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-subtask"/></svg>Needs</button>
+    <button class="mob-tab" id="mobt-fin" onclick="mobNav('fin')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-briefcase"/></svg>Proj.</button>
+    <button class="mob-tab" id="mobt-dashboard" onclick="mobNav('dashboard')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-chart"/></svg>Dash</button>
+    <button class="mob-tab" id="mobt-more" onclick="mobToggleMore()"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>Altro</button>
+  </div>
+  <div class="mob-more-overlay" id="mob-more-overlay" onclick="mobCloseMore()">
+    <div class="mob-more-menu" onclick="event.stopPropagation()">
+      <button class="mob-more-item" id="mobm-risorse" onclick="mobNav('risorse');mobCloseMore()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-user"/></svg>Risorse</button>
+      <button class="mob-more-item" id="mobm-allocazioni" onclick="mobNav('allocazioni');mobCloseMore()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-layers"/></svg>Allocaz.</button>
+      <button class="mob-more-item" id="mobm-opps" onclick="mobNav('opps');mobCloseMore()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-briefcase"/></svg>Gest.Opp</button>
+      <button class="mob-more-item" id="mobm-staffing" onclick="mobNav('staffing');mobCloseMore()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-users"/></svg>Staffing</button>
+      <button class="mob-more-item" id="mobm-fin" onclick="mobNav('fin');mobCloseMore()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-briefcase"/></svg>Proj.</button>
+      <button class="mob-more-item" id="mobm-admin" onclick="goAdmin();mobCloseMore()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-gear"/></svg>Admin</button>
+    </div>
+  </div>
+
+  <div id="kpi-sync" class="toast-area" style="position:fixed;top:52px;right:12px;z-index:999;font-size:11px;padding:4px 10px;background:#fff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.15);pointer-events:none;opacity:0;transition:opacity .3s"></div>
+<div class="ro-banner" id="ro-banner"><svg class="ico" aria-hidden="true"><use href="#i-eye"/></svg><span>Modalità <b>sola lettura</b></span></div>
+  <div class="kpi-bar">
+    <div class="kpi-item"><span class="kpi-n kc-w" id="kpi-tot">—</span><span class="kpi-l">Opp.</span></div>
+    <div class="kpi-sep"></div>
+    <div class="kpi-item"><span class="kpi-n kc-a" id="kpi-open">—</span><span class="kpi-l">Aperte</span></div>
+    <div class="kpi-sep"></div>
+    <div class="kpi-item"><span class="kpi-n kc-g" id="kpi-val">—</span><span class="kpi-l">M€ pip.</span></div>
+    <div class="kpi-sep"></div>
+    <div class="kpi-item"><span class="kpi-n kc-w" id="kpi-needs">—</span><span class="kpi-l">Needs</span></div>
+    <div class="kpi-sep"></div>
+    <div class="kpi-item"><span class="kpi-n kc-e" id="kpi-daass">—</span><span class="kpi-l">Da ass.</span></div>
+    <div class="kpi-sep"></div>
+    <div class="kpi-item"><span class="kpi-n kc-o" id="kpi-prop">—</span><span class="kpi-l">Proposti</span></div>
+    <div class="kpi-sep"></div>
+    <div class="kpi-item"><span class="kpi-n kc-g" id="kpi-conf">—</span><span class="kpi-l">Conferm.</span></div>
+  </div>
+  <div class="page-home">
+    <!-- LEFT PANEL -->
+    <div class="left-panel" id="left-panel">
+      <div class="lp-search-wrap">
+        <input type="text" class="lp-search" id="f-search" placeholder="Cerca..." oninput="onSearch(this.value)"/>
+      </div>
+      <div class="lp-filters-top">
+        <label class="lp-chk-top"><input type="checkbox" id="f-aperte" checked onchange="onFlt()"/> Opp. aperte</label>
+        <label class="lp-chk-top"><input type="checkbox" id="f-teamup" onchange="onFlt()"/> Team scaling</label>
+      </div>
+      <div class="lp-filters-grid-wrap">
+        <div class="lp-grid-labels">
+          <span class="lp-grid-label">GPU</span>
+          <span class="lp-grid-label">GPR</span>
+          <span class="lp-grid-label">RFP</span>
+          <span class="lp-grid-label">PRO</span>
+          <span class="lp-grid-label">QUA</span>
+        </div>
+        <div class="lp-grid-checks" style="grid-template-columns:repeat(5,1fr)">
+          <label class="lp-grid-chk" title="Gara pubblica"><input type="checkbox" id="f-gara" onchange="onFlt()"/></label>
+          <label class="lp-grid-chk" title="Gara privata"><input type="checkbox" id="f-priv" onchange="onFlt()"/></label>
+          <label class="lp-grid-chk" title="RFP"><input type="checkbox" id="f-rfp" onchange="onFlt()"/></label>
+          <label class="lp-grid-chk" title="Proattiva"><input type="checkbox" id="f-pro" onchange="onFlt()"/></label>
+          <label class="lp-grid-chk" title="Qualification"><input type="checkbox" id="f-qual" onchange="onFlt()"/></label>
+        </div>
+      </div>
+      <div class="lp-sep"></div>
+      <div class="lp-sort-row">
+        <button class="lp-sort-btn" onclick="cycleSort()" title="Ordina">
+          <svg class="ico" style="width:14px;height:14px" aria-hidden="true"><use href="#i-sort-asc"/></svg>
+          <svg class="ico" style="width:14px;height:14px" aria-hidden="true"><use href="#i-sort-desc"/></svg>
+        </button>
+      </div>
+      <div class="lp-list" id="lp-list"></div>
+    </div>
+    <!-- VIEWS -->
+    <div id="view-list" class="view active">
+      <div class="list-wrap">
+        <div class="list-filter-bar">
+          <input type="text" class="lf-search" id="list-search" placeholder="Cerca..." oninput="onSearch(this.value)"/>
+          <div class="stato-pills">
+            <button class="s-pill active" data-stato="" onclick="setStatoPill(this)">Tutti</button>
+            <button class="s-pill p-prep" data-stato="Preparazione proposta" onclick="setStatoPill(this)">Prep.</button>
+            <button class="s-pill p-val" data-stato="In valutazione" onclick="setStatoPill(this)">Val.</button>
+            <button class="s-pill p-neg" data-stato="Negoziazione" onclick="setStatoPill(this)">Neg.</button>
+            <button class="s-pill p-win" data-stato="Vinta" onclick="setStatoPill(this)">Vinta</button>
+            <button class="s-pill p-los" data-stato="Persa" onclick="setStatoPill(this)">Persa</button>
+          </div>
+          <label class="lf-chk"><input type="checkbox" id="lf-aperte" checked onchange="onFlt()"/> Aperte</label>
+          <label class="lf-chk"><input type="checkbox" id="lf-teamup" onchange="onFlt()"/> Team scaling</label>
+          <label class="lf-chk"><input type="checkbox" id="lf-gara" onchange="onFlt()"/> Gara pub.</label>
+          <label class="lf-chk"><input type="checkbox" id="lf-priv" onchange="onFlt()"/> Gara priv.</label>
+          <button class="btn-act primary" id="btn-list-new" onclick="goNewOpp()" style="margin-left:auto"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuova</button>
+        </div>
+        <div class="tbl-wrap"><table class="tbl" id="list-tbl"></table></div>
+        <div class="list-footer">
+          <div class="list-footer-acts">
+            <button class="btn-act secondary" id="btn-list-view" disabled onclick="viewInGestione()"><svg class="ico" aria-hidden="true"><use href="#i-briefcase"/></svg>View</button>
+            <button class="btn-act secondary" id="btn-list-edit" disabled onclick="openListEdit()"><svg class="ico" aria-hidden="true"><use href="#i-sparkles"/></svg>Modifica AI</button>
+            <button class="btn-act secondary" id="btn-list-del" disabled onclick="listDeleteOpp()" style="color:var(--err);border-color:rgba(192,57,43,.25)"><svg class="ico" aria-hidden="true"><use href="#i-trash"/></svg>Elimina</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:11px;color:var(--muted)">Righe: <b id="list-row-ct">0</b></span>
+            <span style="font-size:10px;color:var(--dim);font-style:italic">doppio click → dettaglio</span>
+            <button class="btn-export" onclick="document.getElementById('csv-file').click()" title="Importa CSV"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>CSV</button><input type="file" id="csv-file" accept=".csv" style="display:none" onchange="importOppCSV(this)"/>
+            <button class="btn-export" onclick="exportListXLS()"><svg class="ico" aria-hidden="true"><use href="#i-excel"/></svg>Excel</button>
+          </div>
+        </div>
+        <div class="list-edit-panel" id="list-edit-panel">
+          <div class="list-edit-header">
+            <svg class="ico" aria-hidden="true"><use href="#i-sparkles"/></svg>
+            <span id="list-edit-info">Seleziona una riga</span>
+            <button class="btn-icon" onclick="closeListEdit()" style="margin-left:auto"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+          <textarea class="list-edit-prompt" id="list-edit-prompt" placeholder="Descrivi le modifiche..."></textarea>
+          <div id="le-files-preview" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px"></div>
+        <div class="list-edit-acts">
+            <div id="list-edit-area" class="toast-area" style="flex:1"></div>
+            <button class="btn-analyze" id="btn-list-analyze" onclick="listEditAnalyze()">
+              <div class="spinner" id="le-sp"></div><svg class="ico" aria-hidden="true"><use href="#i-sparkles"/></svg><span id="le-bt">Analizza</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="view-needs" class="view">
+      <div class="list-wrap">
+        <div class="list-filter-bar">
+          <input type="text" class="lf-search" id="nf-search" placeholder="Cerca..." oninput="onSearch(this.value)"/>
+          <label class="lf-chk"><input type="checkbox" id="nf-aperte" checked onchange="onFlt()"/> Opp. aperte</label>
+          <select id="nf-stato" style="background:var(--surf2);border:.5px solid var(--bdr2);border-radius:6px;padding:4px 8px;color:var(--txt);font-size:11px;font-family:var(--font)" onchange="renderNeeds()">
+            <option value="">Tutti gli stati</option>
+            <option>Da assegnare</option><option>In valutazione</option><option>Proposto</option>
+            <option>Assegnato</option><option>Confermato</option><option>Annullato</option>
+          </select>
+        </div>
+        <div class="tbl-wrap"><table class="tbl" id="needs-tbl"></table></div>
+        <div class="list-footer">
+          <div class="list-footer-acts">
+            <button class="btn-act primary" id="btn-needs-new" onclick="goNewOpp()"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuova opp.</button>
+            <button class="btn-act secondary" id="btn-needs-stf" disabled onclick="goStfFromNeeds()"><svg class="ico" aria-hidden="true"><use href="#i-users"/></svg>Staffing</button>
+            <button class="btn-act secondary" id="btn-needs-del" disabled onclick="needsDeleteRow()" style="color:var(--err);border-color:rgba(192,57,43,.25)"><svg class="ico" aria-hidden="true"><use href="#i-trash"/></svg>Elimina</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:11px;color:var(--muted)">Righe: <b id="needs-row-ct">0</b></span>
+            <button class="btn-export" onclick="exportNeedsXLS()"><svg class="ico" aria-hidden="true"><use href="#i-excel"/></svg>Excel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="view-opps" class="view" style="flex-direction:column">
+      <div class="rp-toolbar">
+        <button class="btn-ghost" id="btn-new-opp" onclick="showOppForm('new')"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuova</button>
+        <button class="btn-ghost" id="btn-edit-opp" disabled onclick="showOppForm('edit')"><svg class="ico" aria-hidden="true"><use href="#i-pencil"/></svg>Modifica</button>
+        <button class="btn-ghost" id="btn-clone-opp" disabled onclick="cloneOpp()"><svg class="ico" aria-hidden="true"><use href="#i-copy"/></svg>Clona</button>
+        <button class="btn-ghost danger" id="btn-del-opp" disabled onclick="showDelModal()"><svg class="ico" aria-hidden="true"><use href="#i-trash"/></svg>Elimina</button>
+        <button class="btn-ghost" id="btn-rp-cancel" style="display:none" onclick="cancelOppForm()"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg>Annulla</button>
+        <button class="btn-ghost" id="btn-rp-save" style="display:none" onclick="saveOppForm()"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg>Salva</button>
+      </div>
+      <div class="rp-panel" id="rp-content">
+        <div class="rp-empty"><svg class="ico" aria-hidden="true"><use href="#i-inbox"/></svg><span>Seleziona un&apos;opportunità</span></div>
+      </div>
+    </div>
+    <div id="view-dashboard" class="view" style="flex-direction:column;overflow:hidden">
+      <div class="dash-tab-bar">
+        <button class="dash-tab active" id="dtab-pipeline" onclick="switchDashTab('pipeline')">Pipeline Executive</button>
+        <button class="dash-tab" id="dtab-staffing" onclick="switchDashTab('staffing')">Staffing &amp; Capacity</button>
+        <button class="dash-tab" id="dtab-capacity" onclick="switchDashTab('capacity')">Capacity &amp; Pipeline</button>
+        <button class="dash-tab" id="dtab-dq" onclick="switchDashTab('dq')"><svg class="ico" style="width:13px;height:13px;margin-right:3px" aria-hidden="true"><use href="#i-shield"/></svg>Data Quality</button>
+      </div>
+      <div style="flex:1;overflow-y:auto">
+        <div class="dash-wrap">
+          <!-- FILTRI DASHBOARD -->
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+            <select id="df-mercato" style="background:#fff;border:.5px solid var(--bdr2);border-radius:6px;padding:5px 8px;font-size:11px;font-family:var(--font)" onchange="renderDashboard()">
+              <option value="">Tutti i mercati</option>
+            </select>
+            <select id="df-fp" style="background:#fff;border:.5px solid var(--bdr2);border-radius:6px;padding:5px 8px;font-size:11px;font-family:var(--font)" onchange="renderDashboard()">
+              <option value="">Tutti i focal point</option>
+            </select>
+            <input type="text" id="df-from" placeholder="gg/mm/aaaa" maxlength="10" style="background:#fff;border:.5px solid var(--bdr2);border-radius:6px;padding:5px 8px;font-size:11px;font-family:var(--mono);width:100px" oninput="autoFmtDate(this)" onblur="validateDateIt(this);renderDashboard()" title="Data consegna da"/>
+            <input type="text" id="df-to" placeholder="gg/mm/aaaa" maxlength="10" style="background:#fff;border:.5px solid var(--bdr2);border-radius:6px;padding:5px 8px;font-size:11px;font-family:var(--mono);width:100px" oninput="autoFmtDate(this)" onblur="validateDateIt(this);renderDashboard()" title="Data consegna a"/>
+            <button class="btn-act secondary" onclick="resetDashFilters()" style="font-size:11px;padding:4px 10px">Reset</button>
+          </div>
+          <!-- PIPELINE -->
+          <div class="dash-section active" id="dsec-pipeline">
+            <div class="kpi-row" id="d-kpi-row"></div>
+            <div class="dash-grid" id="d-charts-row1"></div>
+            <div class="dash-grid" id="d-charts-row2"></div>
+            <div class="dash-grid" id="d-charts-row3" style="grid-template-columns:1fr 1fr;margin-top:12px"></div>
+          </div>
+          <!-- STAFFING -->
+          <div class="dash-section" id="dsec-staffing">
+            <div class="kpi-row" id="ds-kpi-row"></div>
+            <div class="dash-grid" id="ds-charts-row1"></div>
+            <div id="ds-uncovered"></div>
+          </div>
+          <div class="dash-section" id="dsec-capacity">
+            <div class="kpi-row" id="dc-kpi-row"></div>
+            <div class="dash-grid" id="dc-charts-row1"></div>
+            <div class="dash-grid" id="dc-charts-row2" style="margin-top:12px"></div>
+            <div class="dash-card" style="margin-top:12px">
+              <div class="dash-card-title">Storico utilizzo <button onclick="saveSnapshot().then(function(){renderSnapshots(document.getElementById('snap-tbl'));})" style="float:right;background:none;border:.5px solid var(--bdr2);border-radius:5px;cursor:pointer;font-size:10px;padding:2px 8px;font-family:var(--font)">+ Snapshot</button></div>
+              <div id="snap-tbl"></div>
+            </div>
+          </div>
+          <div class="dash-section" id="dsec-dq">
+            <div id="dq-content" style="padding:12px 14px;overflow-y:auto"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+    <div id="view-calendario" class="view" style="flex-direction:column;overflow:hidden">
+      <div class="cal-header" style="padding:14px 16px 0;flex-shrink:0">
+        <button class="cal-nav" onclick="calMove(-1)">&#8592;</button>
+        <span class="cal-month-title" id="cal-title"></span>
+        <button class="cal-nav" onclick="calMove(1)">&#8594;</button>
+        <button class="cal-nav" onclick="calGoToday()">Oggi</button>
+        <span style="font-size:11px;color:var(--muted);margin-left:8px">Barre = data consegna opportunità aperte</span>
+      </div>
+      <div class="cal-wrap" id="cal-wrap"></div>
+    </div>
+<div id="view-risorse" class="view" style="flex-direction:column;overflow:hidden">
+      <div style="display:flex;gap:6px;padding:8px 12px;flex-shrink:0;border-bottom:.5px solid var(--bdr);background:var(--surf)">
+        <button class="dash-tab active" id="rtab-list" onclick="switchResTabFn('list')">Elenco</button>
+        <button class="dash-tab" id="rtab-avail" onclick="switchResTabFn('avail')">Disponibilità</button>
+        <button class="dash-tab" id="rtab-skill" onclick="switchResTabFn('skill')">Skill Matrix</button>
+      </div>
+      <div id="rsec-list" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0">
+        <div class="list-wrap">
+          <div class="list-filter-bar">
+            <input type="text" class="lf-search" id="rf-search" placeholder="Cerca risorsa..." oninput="renderRisorse()"/>
+            <select id="rf-livello" style="background:#fff;border:.5px solid var(--bdr2);border-radius:6px;padding:5px 8px;color:var(--txt);font-size:12px;font-family:var(--font)" onchange="renderRisorse()">
+              <option value="">Tutti i livelli</option>
+              <option>T1</option><option>T2</option><option>T3</option>
+              <option>G1</option><option>G2</option><option>G3</option>
+            </select>
+            <select id="rf-area" style="background:#fff;border:.5px solid var(--bdr2);border-radius:6px;padding:5px 8px;color:var(--txt);font-size:12px;font-family:var(--font)" onchange="renderRisorse()">
+              <option value="">Tutte le aree</option>
+              <option>Data</option><option>AI</option><option>RPA</option>
+            </select>
+            <button class="btn-act primary" id="btn-res-new" onclick="addRisorsa()" style="margin-left:auto"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuova</button>
+          </div>
+          <div class="tbl-wrap"><table class="tbl" id="risorse-tbl"></table></div>
+          <div style="padding:6px 4px 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+            <span style="font-size:11px;color:var(--muted)">Risorse: <b id="res-ct">0</b></span>
+            <button class="btn-export" onclick="exportRisorseXLS()"><svg class="ico" aria-hidden="true"><use href="#i-excel"/></svg>Excel</button>
+          </div>
+        </div>
+      </div>
+      <div id="rsec-skill" style="display:none;flex:1;overflow-y:auto;padding:10px;min-height:0"><div id="skill-matrix"></div></div>
+      <div id="rsec-avail" style="display:none;flex:1;overflow-y:auto;padding:10px;min-height:0">
+        <div id="avail-content"></div>
+      </div>
+    </div>
+    <div id="view-fin" class="view" style="flex-direction:column;overflow:hidden">
+      <div style="padding:10px 14px;border-bottom:.5px solid var(--bdr);display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--surf)">
+        <svg class="ico" style="color:var(--accent)" aria-hidden="true"><use href="#i-briefcase"/></svg>
+        <span style="font-weight:700;font-size:13px;flex-shrink:0">Proj. Gestiti</span>
+        <select id="fin-prj-sel" onchange="renderFin()" style="border:.5px solid var(--bdr2);border-radius:6px;padding:4px 7px;font-size:12px;font-family:var(--font)"></select>
+        <div id="fin-config-bar" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap"></div>
+        <button class="btn-export" onclick="exportFinXLS()" style="margin-left:auto;flex-shrink:0"><svg class="ico" aria-hidden="true"><use href="#i-excel"/></svg>Excel</button>
+      </div>
+      <div style="flex:1;overflow:auto;padding:12px 14px" id="fin-content"></div>
+    </div>
+    <div id="view-gg-lav" class="view" style="flex-direction:column;overflow:hidden">
+      <div style="padding:10px 14px;border-bottom:.5px solid var(--bdr);display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--surf)">
+        <svg class="ico" style="color:var(--accent)" aria-hidden="true"><use href="#i-calendar"/></svg>
+        <span style="font-weight:700;font-size:13px">Giorni Lavorativi</span>
+        <span style="font-size:11px;color:var(--muted);margin-left:4px">solo gruppo Head</span>
+        <input type="number" id="gg-filter-year" placeholder="Anno (es. 2026)" min="2020" max="2030"
+          style="margin-left:auto;width:120px;border:.5px solid var(--bdr2);border-radius:6px;padding:5px 8px;font-size:12px;font-family:var(--font)"
+          oninput="renderGG()"/>
+        <button class="btn-act primary" onclick="openGGEdit(null)" style="font-size:11px"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuovo mese</button>
+        <button class="btn-export" onclick="exportGGXLS()"><svg class="ico" aria-hidden="true"><use href="#i-excel"/></svg>Excel</button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:12px 14px">
+        <table class="tbl" id="gg-tbl"></table>
+      </div>
+          <div class="fgrid fgrid-2">
+            <div class="field"><label>Mese (es. Jan-2026)</label><input type="text" id="gg-mese" placeholder="Jan-2026"/></div>
+            <div class="field"><label>GG lavorativi</label><input type="number" id="gg-gg" min="0" max="31"/></div>
+            <div class="field"><label>HH lavorative</label><input type="number" id="gg-hh" min="0"/></div>
+            <div class="field"><label>GG Chiusura aziendale</label><input type="number" id="gg-chius" min="0" value="0"/></div>
+          </div>
+          <input type="hidden" id="gg-edit-idx"/>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+            <button class="btn-act secondary" style="color:var(--err)" id="btn-gg-del" onclick="deleteGGEntry()"><svg class="ico" aria-hidden="true"><use href="#i-trash"/></svg></button>
+            <button class="btn-act secondary" onclick="document.getElementById('gg-modal').style.display='none'">Annulla</button>
+            <button class="btn-act primary" onclick="saveGGEdit()"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg>Salva</button>
+    </div>
+    </div>
+    <div id="view-progetti" class="view" style="flex-direction:column;overflow:hidden">
+      <!-- Sezione Import xlsx -->
+      <div id="prj-import-bar" style="padding:10px 14px;border-bottom:.5px solid var(--bdr);background:var(--surf2);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <svg class="ico" style="color:var(--accent)" aria-hidden="true"><use href="#i-excel"/></svg>
+        <span style="font-weight:600;font-size:12px">Import da xlsx (Summary)</span>
+        <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;border:.5px solid var(--bdr2);border-radius:6px;padding:4px 10px;background:var(--surf)">
+          <svg class="ico" aria-hidden="true"><use href="#i-upload"/></svg>
+          Scegli file .xlsx
+          <input type="file" accept=".xlsx" style="display:none" onchange="prjImportXlsx(this)">
+        </label>
+        <div id="prj-import-opts" style="display:none;align-items:center;gap:10px;flex-wrap:wrap">
+          <span id="prj-import-fname" style="font-size:11px;color:var(--muted)"></span>
+          <label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="prj-import-mode" value="single" checked onchange="prjImportModeChange()"> Mese specifico<select id="prj-import-mese-sel" style="margin-left:6px;font-size:11px;border:.5px solid var(--bdr2);border-radius:5px;padding:2px 6px;max-width:150px"><option value="">-- seleziona --</option></select></label>
+          <label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="prj-import-mode" value="all" onchange="prjImportModeChange()"> Tutti i mesi</label>
+          <button class="btn-act" onclick="prjImportConfirm()" style="font-size:12px">Importa</button>
+          <button class="btn-act secondary" onclick="prjImportReset()" style="font-size:12px">Annulla</button>
+        </div>
+        <div id="prj-import-preview" style="width:100%;font-size:11px;color:var(--muted)"></div>
+      </div>
+      <div class="list-wrap">
+        <div class="list-filter-bar">
+          <input type="text" class="lf-search" id="pf-search" placeholder="Cerca progetto o cliente..." oninput="renderProgetti()"/>
+          <select id="pf-cliente" style="background:#fff;border:.5px solid var(--bdr2);border-radius:6px;padding:5px 8px;font-size:12px;font-family:var(--font)" onchange="renderProgetti()">
+            <option value="">Tutti i clienti</option>
+          </select>
+          <button class="btn-act primary" id="btn-prj-new" onclick="openPrjEdit(null)" style="margin-left:auto"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuovo</button>
+          <button class="btn-export" onclick="exportProgettiXLS()"><svg class="ico" aria-hidden="true"><use href="#i-excel"/></svg>Excel</button>
+        </div>
+        <div class="tbl-wrap"><table class="tbl" id="prj-tbl"></table></div>
+        <div style="padding:6px 4px 0;font-size:11px;color:var(--muted)">Progetti: <b id="prj-ct">0</b></div>
+      </div>
+      <!-- Modal edit progetto -->
+      <div id="prj-modal" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.35);z-index:500;align-items:center;justify-content:center">
+        <div style="background:#fff;border-radius:12px;width:480px;max-width:94vw;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <b id="prj-modal-title" style="font-size:14px">Progetto</b>
+            <button onclick="closePrjEdit()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">×</button>
+          </div>
+          <div class="fgrid fgrid-2">
+            <div class="field"><label>Cliente</label><input type="text" id="pf-cli" placeholder="es. Terna"/></div>
+            <div class="field"><label>Progetto</label><input type="text" id="pf-prj" placeholder="es. Terna HR"/></div>
+            <div class="field"><label>Codice Progetto</label><input type="text" id="pf-cod" placeholder="es. PRJ-001"/></div>
+            <div class="field"><label>WBS</label><input type="text" id="pf-wbs" placeholder="es. 1.2.3"/></div>
+          </div>
+          <div class="field"><label>Note</label><textarea id="pf-note" rows="2" style="width:100%;resize:vertical"></textarea></div>
+          <input type="hidden" id="pf-id"/>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+            <button class="btn-act secondary" style="color:var(--err)" id="btn-prj-del" onclick="deletePrj()"><svg class="ico" aria-hidden="true"><use href="#i-trash"/></svg>Elimina</button>
+            <button class="btn-act secondary" onclick="closePrjEdit()">Annulla</button>
+            <button class="btn-act primary" onclick="savePrjEdit()"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg>Salva</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="view-allocazioni" class="view" style="flex-direction:column;overflow:hidden">
+      <!-- TOOLBAR: AI prompt + pulsanti -->
+      <div class="alc-toolbar">
+        <div class="ai-prompt-wrap">
+          <svg class="ico" style="color:var(--accent);flex-shrink:0;margin-top:8px" aria-hidden="true"><use href="#i-sparkles"/></svg>
+          <textarea class="ai-prompt-input" id="alc-ai-input" rows="1"
+            placeholder="Descrivi la modifica... es. 'Rossi è passato da Eni a Poste con 1 FTE' oppure 'aggiungi Bianchi su Acea 0.5 FTE'"
+            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+            onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey))alcAiApply()"></textarea>
+          <button class="btn-act primary" onclick="alcAiApply()" style="flex-shrink:0"><svg class="ico" aria-hidden="true"><use href="#i-sparkles"/></svg>Applica AI</button>
+        </div>
+        <select id="alc-filter-area" style="background:#fff;border:.5px solid var(--bdr2);border-radius:6px;padding:5px 8px;font-size:12px;font-family:var(--font)" onchange="renderAlcMappa()"><option value="">Tutte le aree</option><option>Data</option><option>AI</option><option>RPA</option></select>
+        <button class="btn-act secondary" onclick="alcNuova()" id="btn-alc-new"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuova</button>
+        
+        <button class="btn-act secondary" onclick="alcFltResetAll()" title="Cancella tutti i filtri attivi" style="font-size:11px;color:var(--err);border-color:rgba(192,57,43,.3)">✕ Filtri</button>
+        <button class="btn-act secondary" onclick="exportAlcXLS()" title="Esporta Excel"><svg class="ico" aria-hidden="true"><use href="#i-excel"/></svg>Excel</button>
+      </div>
+      <div id="alc-ai-status" style="display:none;padding:4px 12px;background:rgba(26,92,184,.06);border-bottom:.5px solid var(--bdr)">
+        <div class="ai-thinking"><div class="ai-thinking-dot"></div><span id="alc-ai-msg">Elaborazione AI...</span></div>
+      </div>
+      <!-- TAB BAR -->
+      <div class="alc-tabs">
+        <button class="alc-tab active" id="atab-mappa" onclick="switchAlcTab('mappa')">Mappa allocazioni</button>
+        <button class="alc-tab" id="atab-idle" onclick="switchAlcTab('idle')">Alert Idle</button>
+        <button class="alc-tab" id="atab-gantt" onclick="switchAlcTab('gantt')">Timeline</button>
+        <button class="alc-tab" id="atab-viz" onclick="switchAlcTab('viz')">📊 Visualizzazioni</button>
+        <button class="alc-tab" id="atab-ded" onclick="switchAlcTab('ded')">🕐 Dedications</button>
+      </div>
+      <!-- CONTENUTO -->
+      <div style="flex:1;display:flex;overflow:hidden;min-height:0">
+        <div class="alc-section" id="asec-mappa" style="flex:1;overflow:auto;padding:10px 12px"></div>
+        <div class="alc-section" id="asec-idle" style="display:none;flex:1;flex-direction:column;overflow:hidden;padding:0"></div>
+        <div class="alc-se<div class="alc-section" id="asec-gantt" style="display:none;flex:1;flex-direction:column;overflow:hidden;padding:0"></div>
+        <div class="alc-section" id="asec-viz" style="display:none;flex:1;overflow:auto;padding:10px 12px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="viz-tabs"></div>
+          <div id="viz-content"></div>
+        </div>
+        <div class="alc-section" id="asec-ded" style="display:none;flex:1;flex-direction:row;overflow:hidden">
+  <div style="width:220px;min-width:180px;flex-shrink:0;background:var(--surf2);border-right:.5px solid var(--bdr);display:flex;flex-direction:column;padding:10px 10px 8px;gap:10px;overflow-y:auto">
+    <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.05em">RISORSA</label><select id="ore-flt-risorsa" multiple style="flex:1;min-height:90px;max-height:140px;font-size:12px;border:.5px solid var(--bdr2);border-radius:6px;padding:3px 5px;background:var(--surf)" onchange="renderOreRisorse()"></select></div>
+    <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.05em">CODICE PROGETTO</label><select id="ore-flt-progetto" multiple style="flex:1;min-height:90px;max-height:140px;font-size:12px;border:.5px solid var(--bdr2);border-radius:6px;padding:3px 5px;background:var(--surf)" onchange="renderOreRisorse()"></select></div>
+    <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.05em">MESE</label><select id="ore-flt-mese" multiple style="flex:1;min-height:80px;max-height:120px;font-size:12px;border:.5px solid var(--bdr2);border-radius:6px;padding:3px 5px;background:var(--surf)" onchange="renderOreRisorse()"></select></div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:8px;border-top:.5px solid var(--bdr)"><button class="btn-ghost" onclick="oreFltReset()" style="font-size:11px;width:100%">Reset filtri</button><button class="btn-export" onclick="exportOreXLS()" style="width:100%;justify-content:center"><svg class="ico" aria-hidden="true"><use href="#i-excel"/></svg>Excel</button></div>
+    <div style="font-size:10px;color:var(--muted);text-align:center"><span id="ore-info"></span></div>
+  </div>
+  <div style="flex:1;overflow:auto;padding:10px 14px;min-width:0"><table class="tbl" id="ore-tbl" style="width:100%"></table></div>
+        </div>
+        <!-- PANNELLO EDIT -->
+        <div class="alc-edit-panel hidden" id="alc-edit-panel" style="width:560px;min-width:560px">
+          <div style="padding:10px 12px;border-bottom:.5px solid var(--bdr);display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;font-weight:700" id="alc-edit-title">Modifica allocazione</span>
+            <button onclick="closeAlcEdit()" style="background:none;border:none;cursor:pointer;color:var(--muted)"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+          <!-- corpo dinamico inserito da openAlcEdit -->
+
+        </div>
+      </div>
+    </div>
+    <div id="view-staffing" class="view" style="flex-direction:column">
+      <div class="stf-view" id="stf-view">
+        <div id="stf-no-sel" style="display:flex;flex:1;align-items:center;justify-content:center;color:var(--dim);flex-direction:column;gap:8px">
+          <svg class="ico" aria-hidden="true"><use href="#i-users"/></svg><span>Seleziona un'opportunità dal pannello</span>
+        </div>
+        <div id="stf-sel" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+          <div style="padding:8px 12px;border-bottom:.5px solid var(--bdr);display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <label style="font-size:11px;color:var(--muted);white-space:nowrap">Opportunità:</label>
+            <select id="stf-opp-sel" style="flex:1;background:#fff;border:.5px solid var(--bdr2);border-radius:6px;padding:4px 8px;font-size:12px;font-family:var(--font)" onchange="stfSelOpp(this.value)"></select>
+          </div>
+          <div class="stf-detail-box" id="stf-opp-info"></div>
+          <div class="stf-action-bar" id="stf-action-bar">
+            <button class="btn-act primary" id="btn-stf-new" onclick="showStfForm('new')"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuova</button>
+            <button class="btn-act secondary" id="btn-stf-edit" disabled onclick="showStfForm('edit')"><svg class="ico" aria-hidden="true"><use href="#i-pencil"/></svg>Modifica</button>
+            <button class="btn-act secondary" id="btn-stf-reset" onclick="cancelStfForm()"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg>Annulla</button>
+            <button class="btn-act primary" id="btn-stf-save" style="display:none" onclick="saveStfForm()"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg>Salva</button>
+            <span style="font-size:11px;color:var(--muted);margin-left:4px">Needs: <b id="stf-ct">0</b></span>
+          </div>
+          <div class="stf-tbl-wrap"><table class="tbl" id="stf-tbl"></table></div>
+          <div class="stf-form-area" id="stf-form-area">
+            <div style="color:var(--dim);font-size:12px;padding:12px">Seleziona una riga o aggiungi una nuova necessità.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-admin" class="page">
+  <div class="topbar">
+    <button class="btn-icon" onclick="goHome()"><svg class="ico" aria-hidden="true"><use href="#i-arrow-l"/></svg></button>
+    <span style="font-weight:600;font-size:13px"><span style="color:#fff">Amministrazione</span></span>
+    <div class="top-r"><button class="btn-icon" onclick="doLogout()"><svg class="ico" aria-hidden="true"><use href="#i-logout"/></svg></button></div>
+  </div>
+  <div style="flex:1;overflow-y:auto">
+    <div class="admin-wrap">
+      <!-- Tab Admin -->
+      <div class="admin-section" style="padding:0">
+        <div style="display:flex;border-bottom:.5px solid var(--bdr);background:var(--surf)">
+          <button id="adm-tab-sys" class="adm-tab active" onclick="admTab('sys')" style="padding:10px 18px;font-size:12px;font-weight:600;border:none;border-bottom:2px solid var(--accent);background:none;cursor:pointer;color:var(--accent)">⚙ Sistema</button>
+          <button id="adm-tab-prj" class="adm-tab" onclick="admTab('prj')" style="padding:10px 18px;font-size:12px;font-weight:600;border:none;border-bottom:2px solid transparent;background:none;cursor:pointer;color:var(--muted)">📁 Conf. Progetti</button>
+          <button id="adm-tab-gg" class="adm-tab" onclick="admTab('gg')" style="padding:10px 18px;font-size:12px;font-weight:600;border:none;border-bottom:2px solid transparent;background:none;cursor:pointer;color:var(--muted)">📅 GG Lavorativi</button>
+          <button id="adm-tab-log" class="adm-tab" onclick="admTab('log');renderAdminLog()" style="padding:10px 18px;font-size:12px;font-weight:600;border:none;border-bottom:2px solid transparent;background:none;cursor:pointer;color:var(--muted)">📋 Log Attività</button>
+        </div>
+        <!-- sys: placeholder, il contenuto è sotto -->
+        <div id="adm-body-sys"></div>
+        <!-- prj: link a view-progetti -->
+        <div id="adm-body-prj" style="display:none;flex-direction:column;overflow:hidden;height:100%">
+          <div style="padding:8px 12px;border-bottom:.5px solid var(--bdr);background:var(--surf2);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <svg class="ico" style="color:var(--accent)" aria-hidden="true"><use href="#i-excel"/></svg>
+            <span style="font-weight:600;font-size:12px">Import da xlsx (Summary)</span>
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;border:.5px solid var(--bdr2);border-radius:6px;padding:4px 10px;background:var(--surf)">
+              <svg class="ico" aria-hidden="true"><use href="#i-upload"/></svg>Scegli file .xlsx
+              <input type="file" accept=".xlsx" style="display:none" onchange="prjImportXlsx2(this)">
+            </label>
+            <div id="prj-import-opts2" style="display:none;align-items:center;gap:8px;flex-wrap:wrap">
+              <span id="prj-import-fname2" style="font-size:11px;color:var(--muted)"></span>
+              <label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="prj-import-mode2" value="single" checked onchange="prjImportModeChange2()"> Mese specifico
+                <select id="prj-import-mese-sel2" style="margin-left:6px;font-size:11px;border:.5px solid var(--bdr2);border-radius:5px;padding:2px 6px;max-width:130px"><option value="">-- seleziona --</option></select>
+              </label>
+              <label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="prj-import-mode2" value="all" onchange="prjImportModeChange2()"> Tutti i mesi</label>
+              <button class="btn-act" onclick="prjImportConfirm2()" style="font-size:12px">Importa</button>
+              <button class="btn-act secondary" onclick="prjImportReset2()" style="font-size:12px">Annulla</button>
+            </div>
+            <div id="prj-import-preview2" style="width:100%;font-size:11px;color:var(--muted)"></div>
+          </div>
+          <div style="padding:8px 12px;border-bottom:.5px solid var(--bdr);display:flex;gap:8px;flex-wrap:wrap">
+            <input type="text" id="adm-pf-search" placeholder="Cerca progetto..." style="flex:1;min-width:120px;border:.5px solid var(--bdr2);border-radius:6px;padding:4px 8px;font-size:12px" oninput="admRenderProgetti()">
+            <button class="btn-act primary" onclick="admNewProgetto()" style="font-size:11px"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuovo</button>
+          </div>
+          <div style="flex:1;overflow:auto">
+            <table class="tbl" id="adm-prj-tbl" style="width:100%"></table>
+          </div>
+        </div>
+        <!-- gg: embedded renderGG -->
+        <div id="adm-body-gg" style="display:none;padding:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <input type="number" id="adm-gg-filter-year" placeholder="Anno (es. 2026)" min="2020" max="2030" style="width:120px;border:.5px solid var(--bdr2);border-radius:6px;padding:4px 8px;font-size:12px" oninput="admRenderGG()"/>
+            <button class="btn-act primary" onclick="openGGEdit(null)" style="font-size:11px"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuovo mese</button>
+            <button class="btn-export" onclick="exportGGXLS()" style="font-size:11px"><svg class="ico" aria-hidden="true"><use href="#i-excel"/></svg>Excel</button>
+          </div>
+        <div id="adm-log" style="display:none"><div id="adm-log-content"></div></div>
+          <table class="tbl" id="adm-gg-tbl"></table>
+        </div>
+      </div>
+      <div class="admin-section" id="adm-groups-section">
+        <div class="admin-section-title">Gruppi e permessi</div>
+        <div id="adm-groups"></div>
+      </div>
+      <div class="admin-section" id="adm-users-section">
+        <div class="admin-section-title">Utenti</div>
+        <div id="adm-stats" style="font-size:12px;color:var(--muted);margin-bottom:.8rem"></div>
+        <div id="user-list"></div>
+        <div id="adm-area" class="toast-area"></div>
+        <div class="nu-form" id="nuf">
+          <div class="fgrid fgrid-2" style="margin-bottom:.6rem">
+            <div class="field"><label>Username</label><input type="text" id="nu-u" placeholder="username"/></div>
+            <div class="field"><label>Password</label><div class="fw"><input type="password" id="nu-p" placeholder="password"/><svg class="ico fi" aria-hidden="true"><use href="#i-eye"/></svg></div></div>
+            <div class="field"><label>Ruolo</label><select id="nu-g" style="width:100%;margin-bottom:6px" onchange="nu_syncRole(this)"><option value="">-- Seleziona gruppo --</option></select>
+            <input type="hidden" id="nu-r" value="user"/></div>
+          </div>
+          <div id="nuf-area" class="toast-area"></div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-act primary" id="btn-nu-save" onclick="addUser()"><svg class="ico" aria-hidden="true"><use href="#i-save"/></svg>Crea</button>
+            <button class="btn-act secondary" id="btn-nu-canc" onclick="document.getElementById('nuf').style.display='none'"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg>Annulla</button>
+          </div>
+        </div>
+        <div style="margin-top:.8rem"><button class="btn-act primary" id="btn-add" onclick="document.getElementById('nuf').style.display='block';document.getElementById('nu-u').focus()"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Nuovo utente</button></div>
+      </div>
+      <div class="admin-section" id="adm-backup-section">
+        <div class="admin-section-title">Backup &amp; Ripristino</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:.8rem">Esporta i dati prima di ogni aggiornamento. Importa per ripristinare.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <button class="btn-act primary" onclick="exportBackup()"><svg class="ico" aria-hidden="true"><use href="#i-download"/></svg>Esporta backup JSON</button>
+          <input type="file" id="bk-file" accept=".json" style="display:none" onchange="bkSetFile(this.files[0])"/>
+        </div>
+        <div class="drop-zone" id="bk-drop" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');bkSetFile(event.dataTransfer.files[0])" onclick="document.getElementById('bk-file').click()">
+          <svg style="width:24px;height:24px;opacity:.4;margin-bottom:6px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <b>Trascina qui il file JSON</b><span>oppure clicca per sfogliare</span>
+          <div class="file-name" id="bk-fname" style="display:none"></div>
+        </div>
+        <div id="bk-confirm-row" style="display:none;margin-top:8px;gap:8px;align-items:center">
+          <button class="btn-act primary" onclick="bkConfirmImport()"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Conferma importazione</button>
+          <button class="btn-act secondary" onclick="bkCancelFile()">Annulla</button>
+        </div>
+        <div id="backup-area" class="toast-area" style="margin-top:.5rem;display:none"></div>
+      </div>
+      <div class="admin-section">
+        <div class="admin-section-title">Storico modifiche</div>
+        <button class="btn-act secondary" onclick="showHistory()"><svg class="ico" aria-hidden="true"><use href="#i-list"/></svg>Mostra storico</button>
+        <div id="history-area" style="max-height:180px;overflow-y:auto;font-size:11px;margin-top:6px"></div>
+      </div>
+      <div class="admin-section">
+        <div class="admin-section-title">Zona pericolo</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:.6rem">Elimina opportunità e staffing dallo storage condiviso.</p>
+        <button class="btn-act secondary" style="color:var(--err);border-color:rgba(192,57,43,.3)" onclick="resetDati()"><svg class="ico" aria-hidden="true"><use href="#i-trash"/></svg>Reimposta opportunità e staffing</button>
+        <div id="reset-area" class="toast-area" style="margin-top:.5rem"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="del-modal" onclick="if(event.target===this)closeDelModal()">
+  <div class="modal-box">
+    <div class="modal-icon" style="background:rgba(244,99,122,.1);border-color:rgba(244,99,122,.3);color:var(--err)"><svg class="ico" aria-hidden="true"><use href="#i-trash"/></svg></div>
+    <div class="modal-title">Elimina opportunità</div>
+    <div class="modal-body" id="del-body">Confermi l'eliminazione?</div>
+    <div class="modal-irrev show"><svg class="ico" aria-hidden="true"><use href="#i-warn-circle"/></svg>Operazione irreversibile.</div>
+    <div id="del-warn" style="font-size:11px;color:var(--warn);margin-bottom:.5rem;display:none"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeDelModal()">Annulla</button>
+      <button class="btn-modal-confirm" style="background:var(--err)" onclick="confirmDel()"><svg class="ico" aria-hidden="true"><use href="#i-trash"/></svg>Elimina</button>
+    </div>
+  </div>
+</div>
+<div class="search-overlay" id="search-overlay" onclick="if(event.target===this)closeSearch()">
+  <div class="search-box">
+    <input class="search-input" id="search-global" placeholder="🔍  Cerca opportunità, risorse, allocazioni, progetti..." oninput="runSearch(this.value)" onkeydown="searchNav(event)"/>
+    <div class="search-results" id="search-results"></div>
+    <div class="search-footer">↑↓ naviga · Enter apri · Esc chiudi · Ctrl+K apri</div>
+  </div>
+</div>
+<div class="notif-panel" id="notif-panel"></div>
+<div id="alc-flt-dd" class="flt-dropdown"></div>
+<div class="transl-overlay" id="transl-overlay"><div class="transl-box"><div class="transl-spinner"></div><span id="transl-msg">Traduzione in corso...</span></div></div>
+<div class="chpwd-overlay" id="chpwd-modal">
+  <div class="chpwd-box">
+    <div class="modal-icon" style="background:rgba(79,142,247,.1);border-color:rgba(79,142,247,.3);color:var(--accent)"><svg class="ico -open" aria-hidden="true"><use href="#i-lock"/></svg></div>
+    <div class="modal-title">Imposta la tua password</div>
+    <div class="modal-body">Stai usando la password di default. Scegliene una nuova prima di continuare.</div>
+    <div class="field" style="margin-bottom:.7rem"><label>Nuova password</label><div class="fw"><input type="password" id="chpwd-new" placeholder="min. 4 caratteri"/><svg class="ico fi" aria-hidden="true"><use href="#i-eye"/></svg></div></div>
+    <div class="field" style="margin-bottom:.7rem"><label>Conferma</label><div class="fw"><input type="password" id="chpwd-confirm" placeholder="ripeti"/></div></div>
+    <div id="chpwd-area" class="toast-area"></div>
+    <button class="btn-primary" onclick="saveChangePwd()"><span>Salva e accedi</span></button>
+  </div>
+</div>
+    
+    
+    
+    
+    
+    
+  <script src="app.js?v=3"></script>
+</body>
+</html>
