@@ -1,4 +1,13 @@
 
+function _initAfterLogin(){
+  return initStorage();
+}
+function showPage(pageId){
+  document.querySelectorAll('.page').forEach(function(p){
+    p.style.display = p.id===pageId ? 'flex' : 'none';
+  });
+}
+
 /* == CONSTANTS == */
 
 const I18N={
@@ -5316,11 +5325,6 @@ function prjImportConfirm2(){
 
 
 
-function showPage(pageId){
-  document.querySelectorAll('.page').forEach(function(p){
-    p.style.display = p.id===pageId ? 'flex' : 'none';
-  });
-}
 
 
 function alcInferDates(){syncAlcDates();}
@@ -5595,9 +5599,6 @@ document.addEventListener('keydown',function(e){
 
 // ── Avvio: Firebase Auth state listener ──────────────────
 // Gestisce sia primo caricamento che refresh pagina con sessione attiva
-function _initAfterLogin(){
-  return initStorage();
-}
 
 _fbAuth.onAuthStateChanged(function(firebaseUser){
   if(firebaseUser){
